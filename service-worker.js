@@ -39,7 +39,7 @@ self.addEventListener('fetch', (event) => {
             return networkResponse;
           });
         })
-        .catch(() => caches.match('./agenda.html'));
+        .catch(() => caches.match('./index.html'));
     })
   );
 });

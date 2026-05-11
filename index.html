@@ -1,0 +1,654 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agenda Eva ✦</title>
+  <link rel="manifest" href="./manifest.json" />
+  <meta name="theme-color" content="#6b21a8" />
+  <!-- Google Fonts para el estilo cartoon -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      /* Paleta Evangelion EVA-01 */
+      --eva-purple: #9b30ff;
+      --eva-purple-dark: #4c1d95;
+      --eva-green: #39ff14;
+      --eva-green-dark: #10b981;
+      --eva-dark: #1a0a2e;
+      --eva-darker: #0f0518;
+      --eva-yellow: #fbbf24;
+      --eva-white: #f5f0ff;
+      --eva-border: #581c87;
+
+      --radius-xl: 2.5rem;
+      --radius-lg: 2rem;
+      --radius-md: 1.25rem;
+
+      font-family: 'Comic Neue', cursive, system-ui, sans-serif;
+      font-size: 16px;
+      background: var(--eva-darker);
+      color: var(--eva-white);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse at 50% 0%, #4c1d9540 0%, transparent 60%),
+        radial-gradient(circle at 20% 80%, #39ff1415 0%, transparent 40%),
+        var(--eva-dark);
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ----- TIPOGRAFÍA CARTOON ----- */
+    h1, h2, .tab-button, button {
+      font-family: 'Bangers', 'Comic Neue', cursive;
+      letter-spacing: 0.04em;
+      font-weight: 400;
+    }
+
+    header {
+      text-align: center;
+      max-width: 600px;
+      margin-bottom: 1.5rem;
+    }
+
+    h1 {
+      font-size: clamp(2.8rem, 8vw, 3.8rem);
+      color: var(--eva-green);
+      text-shadow:
+        3px 3px 0 var(--eva-purple-dark),
+        0 0 20px var(--eva-green);
+      margin: 0;
+      line-height: 1.1;
+      transform: rotate(-1deg);
+    }
+
+    p.subtitle {
+      font-size: 1.2rem;
+      color: var(--eva-yellow);
+      background: rgba(0,0,0,0.5);
+      display: inline-block;
+      padding: 0.5rem 1.2rem;
+      border-radius: var(--radius-md);
+      margin-top: 0.75rem;
+      border: 2px dashed var(--eva-green);
+      box-shadow: 0 0 12px var(--eva-purple);
+    }
+
+    /* ----- TARJETA PRINCIPAL ----- */
+    .card {
+      background: #1a0a2ecc;
+      backdrop-filter: blur(12px);
+      border: 3px solid var(--eva-purple);
+      border-radius: var(--radius-xl);
+      box-shadow:
+        0 0 0 4px var(--eva-dark),
+        0 0 0 8px var(--eva-green),
+        0 20px 40px rgba(0,0,0,0.5);
+      padding: 1.8rem 1.5rem;
+      max-width: 680px;
+      width: 100%;
+      position: relative;
+    }
+
+    /* Esquina doblada estilo cartoon */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: -12px;
+      right: -12px;
+      width: 35px;
+      height: 35px;
+      background: var(--eva-yellow);
+      border-radius: 50%;
+      border: 3px solid black;
+      box-shadow: 2px 2px 0 black;
+    }
+
+    /* Formulario */
+    form {
+      display: grid;
+      gap: 1.2rem;
+    }
+
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      font-size: 1rem;
+      color: var(--eva-white);
+      font-weight: 700;
+      text-shadow: 1px 1px 0 black;
+    }
+
+    input, textarea {
+      background: #2e1065;
+      border: 3px solid black;
+      border-radius: var(--radius-md);
+      padding: 0.8rem 1rem;
+      color: white;
+      font-family: 'Comic Neue', cursive;
+      font-size: 1rem;
+      box-shadow: inset 3px 3px 0 rgba(0,0,0,0.3);
+      outline: none;
+      transition: 0.2s;
+    }
+
+    input:focus, textarea:focus {
+      border-color: var(--eva-green);
+      box-shadow: 0 0 0 4px var(--eva-green-dark);
+    }
+
+    textarea { resize: vertical; min-height: 100px; }
+
+    .helper-text {
+      font-size: 0.85rem;
+      color: var(--eva-yellow);
+      font-style: italic;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      margin-top: 0.5rem;
+    }
+
+    .status {
+      font-weight: 700;
+      color: var(--eva-yellow);
+      background: black;
+      padding: 0.4rem 1rem;
+      border-radius: 2rem;
+      font-size: 0.9rem;
+    }
+
+    /* ----- BOTONES SUPER REDONDEADOS ----- */
+    button, .tab-button {
+      border: 3px solid black;
+      border-radius: var(--radius-xl);
+      padding: 0.8rem 1.6rem;
+      font-size: 1.1rem;
+      cursor: pointer;
+      text-transform: uppercase;
+      box-shadow: 4px 4px 0 black;
+      background: var(--eva-purple);
+      color: white;
+      transition: all 0.1s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem;
+    }
+
+    button:hover, .tab-button:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 black;
+      background: var(--eva-green);
+      color: black;
+    }
+
+    button:active, .tab-button:active {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0 black;
+    }
+
+    button.secondary {
+      background: #334155;
+      color: white;
+    }
+
+    button.secondary:hover {
+      background: var(--eva-yellow);
+      color: black;
+    }
+
+    button.reviewed {
+      background: var(--eva-green);
+      color: black;
+    }
+
+    /* Filtros / pestañas */
+    .filters {
+      display: flex;
+      gap: 0.8rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .tab-button {
+      flex: 1 1 auto;
+      min-width: 120px;
+      background: #4c1d95;
+    }
+
+    .tab-button.active {
+      background: var(--eva-green);
+      color: black;
+      border-color: black;
+      box-shadow: 0 0 12px var(--eva-green);
+    }
+
+    /* Lista de tareas */
+    #task-list {
+      display: grid;
+      gap: 1rem;
+      margin-top: 1.8rem;
+    }
+
+    .task-card {
+      background: #2e1065;
+      border: 3px solid black;
+      border-radius: var(--radius-lg);
+      padding: 1.2rem;
+      box-shadow: 5px 5px 0 black;
+      transition: 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .task-card.reviewed {
+      border-color: var(--eva-green);
+      background: #14532d33;
+      box-shadow: 0 0 15px var(--eva-green);
+    }
+
+    .task-card.reviewed .task-title {
+      text-decoration: line-through;
+      color: var(--eva-green);
+    }
+
+    .task-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.8rem;
+    }
+
+    .task-title {
+      font-size: 1.3rem;
+      margin: 0;
+      color: white;
+    }
+
+    .task-meta {
+      font-size: 0.8rem;
+      color: var(--eva-yellow);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin: 0.3rem 0 0;
+    }
+
+    .task-due {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.7rem;
+      border-radius: 2rem;
+      background: black;
+      color: white;
+      border: 2px solid var(--eva-purple);
+    }
+
+    .task-due.overdue {
+      background: #7f1d1d;
+      border-color: red;
+      color: white;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0.4; }
+    }
+
+    .task-description {
+      background: #1a0a2e;
+      padding: 0.7rem;
+      border-radius: var(--radius-md);
+      margin: 0.8rem 0;
+      border: 2px dashed var(--eva-purple);
+      color: var(--eva-white);
+    }
+
+    .task-actions {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .task-actions button {
+      flex: 1 1 45%;
+      font-size: 0.9rem;
+    }
+
+    .notice {
+      text-align: center;
+      font-size: 1.1rem;
+      color: var(--eva-yellow);
+      background: black;
+      padding: 1.2rem;
+      border-radius: var(--radius-md);
+      border: 2px dashed white;
+    }
+
+    /* Placeholder de imagen (puedes poner un dibujo después) */
+    .image-placeholder {
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 2rem;
+      opacity: 0.7;
+    }
+
+    @media (max-width: 560px) {
+      body { padding: 0.8rem; }
+      .card { padding: 1.2rem; }
+      button, .tab-button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Agenda</h1>
+    <p class="subtitle">ola mi niña Esta es una pequeña agenda espero te guste <br>a cumplir tus tareas</p>
+  </header>
+
+  <section class="card">
+    <div class="filters" id="filter-nav">
+      <button type="button" class="tab-button active" data-filter="all"> Todas</button>
+      <button type="button" class="tab-button" data-filter="pending"> Pendientes</button>
+      <button type="button" class="tab-button" data-filter="reviewed"> Hechas</button>
+    </div>
+
+    <form id="task-form">
+      <label>
+         Misión
+        <input type="text" id="task-title" name="title" placeholder="Ej: Editar video 👀" required />
+      </label>
+      <label>
+         Detalles
+        <textarea id="task-desc" name="description" placeholder="Ej: poner en el video etc etc etc. 👀"></textarea>
+      </label>
+      <label>
+         Fecha límite
+        <input type="date" id="task-date" name="dueDate" />
+        <span class="helper-text">No dejes todo al ultimooooo 👀!</span>
+      </label>
+      <div class="actions">
+        <span class="status" id="task-status">🟢 Lista para tareas</span>
+        <button type="submit"> Agregar tarea</button>
+      </div>
+    </form>
+
+    <div id="task-list"></div>
+
+    <div class="image-placeholder secondary" id="footer-image">
+      <!-- Aquí puedes añadir una imagen o sticker -->
+    <img src="" alt="">
+    </div>
+  </section>
+
+  <!-- Scripts (sin cambios en la lógica) -->
+  <script src="https://cdn.jsdelivr.net/npm/pouchdb@8.0.1/dist/pouchdb.min.js"></script>
+  <script>
+    // El JavaScript se mantiene idéntico para no romper la funcionalidad.
+    class TaskDatabase {
+      constructor(onChange) {
+        this.db = new PouchDB('agenda-tasks');
+        this.onChange = onChange;
+        this.db.changes({ live: true, since: 'now', include_docs: true })
+          .on('change', () => this.onChange())
+          .on('error', (err) => console.error('DB changes error', err));
+      }
+
+      async addTask(title, description, dueDate) {
+        const task = {
+          title: title.trim(),
+          description: description.trim(),
+          dueDate: dueDate || null,
+          reviewed: false,
+          notified: false,
+          createdAt: new Date().toISOString(),
+        };
+        return this.db.post(task);
+      }
+
+      async getTasks() {
+        const result = await this.db.allDocs({ include_docs: true });
+        return result.rows
+          .map((row) => row.doc)
+          .filter(Boolean)
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      }
+
+      async deleteTask(doc) {
+        return this.db.remove(doc);
+      }
+
+      async updateTask(task) {
+        return this.db.put(task);
+      }
+
+      async toggleReviewed(task) {
+        const updated = { ...task, reviewed: !task.reviewed };
+        return this.db.put(updated);
+      }
+    }
+
+    const form = document.getElementById('task-form');
+    const titleInput = document.getElementById('task-title');
+    const descInput = document.getElementById('task-desc');
+    const dateInput = document.getElementById('task-date');
+    const taskList = document.getElementById('task-list');
+    const statusText = document.getElementById('task-status');
+    const filterNav = document.getElementById('filter-nav');
+
+    let currentFilter = 'all';
+    const taskDb = new TaskDatabase(renderTasks);
+    let currentTasks = {};
+
+    filterNav.addEventListener('click', (event) => {
+      const button = event.target.closest('.tab-button');
+      if (!button) return;
+      currentFilter = button.dataset.filter;
+      filterNav.querySelectorAll('.tab-button').forEach((btn) => btn.classList.toggle('active', btn === button));
+      renderTasks();
+    });
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const title = titleInput.value;
+      const description = descInput.value;
+      const dueDate = dateInput.value;
+      if (!title.trim()) {
+        titleInput.focus();
+        return;
+      }
+      statusText.textContent = '🌀 Guardando misión...';
+      await taskDb.addTask(title, description, dueDate);
+      form.reset();
+      titleInput.focus();
+    });
+
+    taskList.addEventListener('click', async (event) => {
+      const button = event.target.closest('button[data-action]');
+      if (!button) return;
+      const docId = button.dataset.id;
+      const action = button.dataset.action;
+      const currentDoc = currentTasks[docId];
+      if (!currentDoc) return;
+      if (action === 'review') {
+        statusText.textContent = currentDoc.reviewed ? '🔄 Devolviendo a pendiente...' : '✅ ¡Misión cumplida!';
+        await taskDb.toggleReviewed(currentDoc);
+      }
+      if (action === 'delete') {
+        const confirmation = confirm('¿Eliminar esta misión?');
+        if (!confirmation) return;
+        statusText.textContent = '💥 Eliminando...';
+        await taskDb.deleteTask(currentDoc);
+      }
+    });
+
+    function formatDueDate(dueDate) {
+      const date = new Date(dueDate);
+      if (Number.isNaN(date.getTime())) return 'Fecha inválida';
+      return `Vence: ${date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })}`;
+    }
+
+    function isOverdue(dueDate) {
+      if (!dueDate) return false;
+      const due = new Date(dueDate);
+      if (Number.isNaN(due.getTime())) return false;
+      const now = new Date();
+      return due.setHours(23, 59, 59, 999) < now.getTime();
+    }
+
+    function isDueTodayOrPast(dueDate) {
+      if (!dueDate) return false;
+      const due = new Date(dueDate);
+      if (Number.isNaN(due.getTime())) return false;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      due.setHours(0, 0, 0, 0);
+      return due.getTime() <= today.getTime();
+    }
+
+    async function requestNotificationPermission() {
+      if (!('Notification' in window)) return false;
+      if (Notification.permission === 'granted') return true;
+      if (Notification.permission === 'denied') return false;
+      const permission = await Notification.requestPermission();
+      return permission === 'granted';
+    }
+
+    const motivationalPhrases = [
+      'Toca revisar tu agenda y avanzar con una tarea.',
+      'Una pequeña acción hoy evita grandes prisas mañana.',
+      'Tus tareas esperarán menos si les das atención ahora.',
+      'Revisar tu lista es el primer paso para cumplirla.',
+      'Un recordatorio amable para que mantengas el ritmo.'
+    ];
+
+    function getRandomMotivation() {
+      return motivationalPhrases[Math.floor(Math.random() * motivationalPhrases.length)];
+    }
+
+    async function sendMotivationalNotification() {
+      if (!('Notification' in window) || Notification.permission !== 'granted') return;
+      const phrase = getRandomMotivation();
+      new Notification('Revisa tu Agenda', {
+        body: phrase,
+        icon: './icons/icon.svg',
+      });
+    }
+
+    async function notifyTaskDue(task) {
+      const message = task.dueDate ? `La tarea "${task.title}" vence hoy.` : `La tarea "${task.title}" tiene una alerta pendiente.`;
+      if (Notification.permission === 'granted') {
+        new Notification('Recordatorio de tarea', {
+          body: message,
+          icon: './icons/icon.svg',
+        });
+      } else {
+        console.log('Notificación pendiente:', message);
+      }
+      const updatedTask = { ...task, notified: true };
+      await taskDb.updateTask(updatedTask);
+    }
+
+    async function checkDueNotifications() {
+      const tasks = await taskDb.getTasks();
+      const notificationsAllowed = Notification.permission === 'granted';
+      for (const task of tasks) {
+        if (!task.dueDate || task.notified) continue;
+        if (isDueTodayOrPast(task.dueDate)) {
+          if (notificationsAllowed) {
+            await notifyTaskDue(task);
+          } else {
+            statusText.textContent = `⏰ ¡${task.title} vence hoy!`;
+          }
+        }
+      }
+    }
+
+    async function renderTasks() {
+      const tasks = await taskDb.getTasks();
+      const filteredTasks = tasks.filter((task) => {
+        if (currentFilter === 'pending') return !task.reviewed;
+        if (currentFilter === 'reviewed') return task.reviewed;
+        return true;
+      });
+      const total = filteredTasks.length;
+      statusText.textContent = total === 0 ? ' Sin tareas aquí.' : `📌 ${total} tarea${total === 1 ? '' : 's'} en ${currentFilter === 'all' ? 'todas' : currentFilter === 'pending' ? 'pendientes' : 'cumplidas'}.`;
+      currentTasks = Object.fromEntries(filteredTasks.map((task) => [task._id, task]));
+      taskList.innerHTML = filteredTasks.map((task) => {
+        const reviewedClass = task.reviewed ? 'reviewed' : '';
+        const description = task.description ? `<p class="task-description">${escapeHtml(task.description)}</p>` : '';
+        const dueBadge = task.dueDate ? `<span class="task-due ${isOverdue(task.dueDate) ? 'overdue' : ''}">${formatDueDate(task.dueDate)}</span>` : '';
+        const actionLabel = task.reviewed ? '↩️ Desmarcar' : '✅ Completar';
+        const actionButtonClass = task.reviewed ? 'secondary' : 'reviewed';
+        return `
+          <article class="task-card ${reviewedClass}">
+            <div class="task-header">
+              <h2 class="task-title">${escapeHtml(task.title)}</h2>
+            </div>
+            <p class="task-meta">
+              ${task.reviewed ? '✔️ Completada · ' : ''}${new Date(task.createdAt).toLocaleString('es-ES')} 
+              ${dueBadge}
+            </p>
+            ${description}
+            <div class="task-actions">
+              <button type="button" class="${actionButtonClass}" data-action="review" data-id="${task._id}">${actionLabel}</button>
+              <button type="button" class="secondary" data-action="delete" data-id="${task._id}">🗑️ Eliminar</button>
+            </div>
+          </article>`;
+      }).join('');
+
+      if (filteredTasks.length === 0) {
+        taskList.innerHTML = '<p class="notice"> ¡No hay tareas! A mimir .</p>';
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    async function registerServiceWorker() {
+      if ('serviceWorker' in navigator) {
+        try {
+          await navigator.serviceWorker.register('./service-worker.js');
+          console.log('Service Worker registrado');
+        } catch (error) {
+          console.warn('Error registrando Service Worker:', error);
+        }
+      }
+    }
+
+    window.addEventListener('load', async () => {
+      const permission = await requestNotificationPermission();
+      if (permission) {
+        statusText.textContent = '🔔 Notificaciones activadas.';
+      }
+      await renderTasks();
+      await checkDueNotifications();
+      setInterval(checkDueNotifications, 60 * 1000);
+      setInterval(sendMotivationalNotification, 5 * 60 * 1000);
+      await registerServiceWorker();
+    });
+  </script>
+</body>
+</html>

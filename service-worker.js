@@ -1,7 +1,7 @@
 const CACHE_NAME = 'agenda-pwa-v1';
 const URLS_TO_CACHE = [
   './',
-  './agenda.html',
+  './index.html',
   './manifest.json',
   './service-worker.js',
   './icons/icon.svg',

@@ -2,7 +2,7 @@
   "name": "Agenda de tareas",
   "short_name": "Agenda",
   "description": "Agenda de tareas.",
-  "start_url": "./agenda.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#4f46e5",

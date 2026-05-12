@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Agenda Eva ✦</title>
+  <title>Agenda</title>
   <link rel="manifest" href="./manifest.json" />
   <meta name="theme-color" content="#6b21a8" />
   <!-- Google Fonts para el estilo cartoon -->
@@ -144,6 +144,24 @@
     }
 
     input:focus, textarea:focus {
+      border-color: var(--eva-green);
+      box-shadow: 0 0 0 4px var(--eva-green-dark);
+    }
+
+    /* Estilo para el nuevo input datetime-local */
+    input[type="datetime-local"] {
+      background: #2e1065;
+      border: 3px solid black;
+      border-radius: var(--radius-md);
+      padding: 0.8rem 1rem;
+      color: white;
+      font-family: 'Comic Neue', cursive;
+      font-size: 1rem;
+      box-shadow: inset 3px 3px 0 rgba(0,0,0,0.3);
+      outline: none;
+    }
+
+    input[type="datetime-local"]:focus {
       border-color: var(--eva-green);
       box-shadow: 0 0 0 4px var(--eva-green-dark);
     }
@@ -349,10 +367,90 @@
       opacity: 0.7;
     }
 
+    /* ----- MODAL PERSONALIZADO (reemplaza el confirm gris) ----- */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 5, 24, 0.8); /* Fondo oscuro translúcido */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      visibility: hidden;
+      opacity: 0;
+      transition: visibility 0.2s, opacity 0.2s;
+    }
+
+    .modal-overlay.active {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .modal-dialog {
+      background: #2e1065;
+      border: 4px solid black;
+      border-radius: var(--radius-xl);
+      padding: 2rem 1.5rem 1.5rem;
+      max-width: 380px;
+      width: 90%;
+      text-align: center;
+      box-shadow:
+        0 0 0 4px var(--eva-purple),
+        0 0 20px var(--eva-green),
+        0 15px 30px rgba(0,0,0,0.7);
+      position: relative;
+    }
+
+    .modal-dialog .modal-icon {
+      font-size: 3.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .modal-dialog p {
+      font-family: 'Bangers', 'Comic Neue', cursive;
+      font-size: 1.3rem;
+      color: var(--eva-white);
+      margin: 0.8rem 0 1.5rem;
+      text-shadow: 1px 1px 0 black;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 0.8rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .modal-actions button {
+      min-width: 100px;
+    }
+
+    .btn-danger {
+      background: #b91c1c;
+      color: white;
+      border-color: black;
+    }
+
+    .btn-danger:hover {
+      background: #ff4444;
+      color: black;
+      box-shadow: 4px 4px 0 black;
+    }
+
+    .btn-cancel {
+      background: var(--eva-purple-dark);
+    }
+
+    .btn-cancel:hover {
+      background: var(--eva-yellow);
+      color: black;
+    }
+
     @media (max-width: 560px) {
       body { padding: 0.8rem; }
       .card { padding: 1.2rem; }
       button, .tab-button { width: 100%; }
+      .modal-dialog { padding: 1.5rem; }
     }
   </style>
 </head>
@@ -379,9 +477,9 @@
         <textarea id="task-desc" name="description" placeholder="Ej: poner en el video etc etc etc. 👀"></textarea>
       </label>
       <label>
-         Fecha límite
-        <input type="date" id="task-date" name="dueDate" />
-        <span class="helper-text">No dejes todo al ultimooooo 👀!</span>
+         Fecha y hora límite
+        <input type="datetime-local" id="task-date" name="dueDate" />
+        <small class="helper-text">no lo dejes al finaaaaal 👀</small>
       </label>
       <div class="actions">
         <span class="status" id="task-status">🟢 Lista para tareas</span>
@@ -393,14 +491,26 @@
 
     <div class="image-placeholder secondary" id="footer-image">
       <!-- Aquí puedes añadir una imagen o sticker -->
-    <img src="" alt="">
+      <img src="" alt="">
     </div>
   </section>
 
-  <!-- Scripts (sin cambios en la lógica) -->
+  <!-- MODAL DE CONFIRMACIÓN (oculto por defecto) -->
+  <div class="modal-overlay" id="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="modal-message">
+    <div class="modal-dialog">
+      <div class="modal-icon">🗑️</div>
+      <p id="modal-message">¿Eliminar esta misión?</p>
+      <div class="modal-actions">
+        <button class="btn-danger" id="modal-confirm-btn">Sí, eliminar</button>
+        <button class="btn-cancel" id="modal-cancel-btn">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/pouchdb@8.0.1/dist/pouchdb.min.js"></script>
   <script>
-    // El JavaScript se mantiene idéntico para no romper la funcionalidad.
+    // Base de datos con nuevos campos para notificaciones escalonadas
     class TaskDatabase {
       constructor(onChange) {
         this.db = new PouchDB('agenda-tasks');
@@ -416,7 +526,8 @@
           description: description.trim(),
           dueDate: dueDate || null,
           reviewed: false,
-          notified: false,
+          notified3h: false,   // aviso 3 horas antes
+          notified1h: false,   // aviso 1 hora antes
           createdAt: new Date().toISOString(),
         };
         return this.db.post(task);
@@ -464,15 +575,72 @@
       renderTasks();
     });
 
+    // ------ MODAL PERSONALIZADO (reemplaza al confirm nativo) ------
+    const modalOverlay = document.getElementById('confirm-modal');
+    const modalMessageEl = document.getElementById('modal-message');
+    const confirmBtn = document.getElementById('modal-confirm-btn');
+    const cancelBtn = document.getElementById('modal-cancel-btn');
+
+    function openModal(message) {
+      modalMessageEl.textContent = message;
+      modalOverlay.classList.add('active');
+      confirmBtn.focus(); // ponemos el foco en el botón de confirmar
+      return new Promise((resolve) => {
+        function handleConfirm() {
+          cleanup();
+          resolve(true);
+        }
+        function handleCancel() {
+          cleanup();
+          resolve(false);
+        }
+        function handleKeydown(e) {
+          if (e.key === 'Escape') {
+            handleCancel();
+          }
+        }
+        function cleanup() {
+          confirmBtn.removeEventListener('click', handleConfirm);
+          cancelBtn.removeEventListener('click', handleCancel);
+          document.removeEventListener('keydown', handleKeydown);
+          modalOverlay.classList.remove('active');
+        }
+        confirmBtn.addEventListener('click', handleConfirm);
+        cancelBtn.addEventListener('click', handleCancel);
+        document.addEventListener('keydown', handleKeydown);
+        // Cerrar haciendo clic fuera del diálogo
+        modalOverlay.addEventListener('click', (e) => {
+          if (e.target === modalOverlay) handleCancel();
+        });
+      });
+    }
+
+    // Validación de fecha futura
+    function isFutureDate(datetimeStr) {
+      if (!datetimeStr) return true; // si no se pone fecha, se permite
+      const dueDate = new Date(datetimeStr);
+      if (Number.isNaN(dueDate.getTime())) return false;
+      return dueDate > new Date();
+    }
+
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
       const title = titleInput.value;
       const description = descInput.value;
-      const dueDate = dateInput.value;
+      const dueDate = dateInput.value; // datetime-local
+
       if (!title.trim()) {
         titleInput.focus();
         return;
       }
+
+      // Validación: solo se permiten fechas futuras
+      if (dueDate && !isFutureDate(dueDate)) {
+        statusText.textContent = 'vas a viajar en el tiempo o como mi amor 👀.';
+        dateInput.focus();
+        return;
+      }
+
       statusText.textContent = '🌀 Guardando misión...';
       await taskDb.addTask(title, description, dueDate);
       form.reset();
@@ -486,42 +654,48 @@
       const action = button.dataset.action;
       const currentDoc = currentTasks[docId];
       if (!currentDoc) return;
+
       if (action === 'review') {
         statusText.textContent = currentDoc.reviewed ? '🔄 Devolviendo a pendiente...' : '✅ ¡Misión cumplida!';
         await taskDb.toggleReviewed(currentDoc);
       }
+
       if (action === 'delete') {
-        const confirmation = confirm('¿Eliminar esta misión?');
-        if (!confirmation) return;
+        // Usamos el modal personalizado en lugar de confirm()
+        const approved = await openModal(`¿Eliminar "${currentDoc.title}"?`);
+        if (!approved) return;
         statusText.textContent = '💥 Eliminando...';
         await taskDb.deleteTask(currentDoc);
       }
     });
 
+    // Formato de fecha (incluye hora si existe)
     function formatDueDate(dueDate) {
       const date = new Date(dueDate);
       if (Number.isNaN(date.getTime())) return 'Fecha inválida';
-      return `Vence: ${date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })}`;
+      const options = { day: '2-digit', month: 'short', year: 'numeric' };
+      if (dueDate.includes('T')) {
+        options.hour = '2-digit';
+        options.minute = '2-digit';
+      }
+      return `Vence: ${date.toLocaleString('es-ES', options)}`;
     }
 
+    // Determina si la tarea está vencida (considera la hora exacta)
     function isOverdue(dueDate) {
       if (!dueDate) return false;
       const due = new Date(dueDate);
       if (Number.isNaN(due.getTime())) return false;
       const now = new Date();
-      return due.setHours(23, 59, 59, 999) < now.getTime();
+      if (dueDate.includes('T')) {
+        return due < now;  // pasó la hora exacta
+      } else {
+        due.setHours(23, 59, 59, 999); // solo fecha -> fin del día
+        return due < now;
+      }
     }
 
-    function isDueTodayOrPast(dueDate) {
-      if (!dueDate) return false;
-      const due = new Date(dueDate);
-      if (Number.isNaN(due.getTime())) return false;
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      due.setHours(0, 0, 0, 0);
-      return due.getTime() <= today.getTime();
-    }
-
+    // Permiso de notificaciones
     async function requestNotificationPermission() {
       if (!('Notification' in window)) return false;
       if (Notification.permission === 'granted') return true;
@@ -530,6 +704,7 @@
       return permission === 'granted';
     }
 
+    // Notificaciones motivacionales
     const motivationalPhrases = [
       'Toca revisar tu agenda y avanzar con una tarea.',
       'Una pequeña acción hoy evita grandes prisas mañana.',
@@ -551,35 +726,50 @@
       });
     }
 
-    async function notifyTaskDue(task) {
-      const message = task.dueDate ? `La tarea "${task.title}" vence hoy.` : `La tarea "${task.title}" tiene una alerta pendiente.`;
-      if (Notification.permission === 'granted') {
-        new Notification('Recordatorio de tarea', {
-          body: message,
-          icon: './icons/icon.svg',
-        });
-      } else {
-        console.log('Notificación pendiente:', message);
-      }
-      const updatedTask = { ...task, notified: true };
-      await taskDb.updateTask(updatedTask);
-    }
-
+    // Nuevo sistema de notificaciones escalonadas: 3h y 1h antes
     async function checkDueNotifications() {
       const tasks = await taskDb.getTasks();
       const notificationsAllowed = Notification.permission === 'granted';
+      if (!notificationsAllowed) return;
+
+      const now = Date.now();
+
       for (const task of tasks) {
-        if (!task.dueDate || task.notified) continue;
-        if (isDueTodayOrPast(task.dueDate)) {
-          if (notificationsAllowed) {
-            await notifyTaskDue(task);
-          } else {
-            statusText.textContent = `⏰ ¡${task.title} vence hoy!`;
-          }
+        // Solo tareas pendientes con fecha/hora completa
+        if (task.reviewed || !task.dueDate || !task.dueDate.includes('T')) continue;
+
+        const dueTime = new Date(task.dueDate).getTime();
+        if (Number.isNaN(dueTime)) continue;
+
+        // Si ya venció, no mandamos recordatorios
+        if (now >= dueTime) continue;
+
+        const oneHourMs = 60 * 60 * 1000;
+        const threeHoursMs = 3 * oneHourMs;
+
+        // Notificar 3 horas antes
+        if (!task.notified3h && now >= dueTime - threeHoursMs) {
+          new Notification('⏳ Recordatorio – 3 horas antes', {
+            body: `"${task.title}" vence en 3 horas. Prepárate.`,
+            icon: './icons/icon.svg',
+          });
+          task.notified3h = true;
+          await taskDb.updateTask(task);
+        }
+
+        // Notificar 1 hora antes
+        if (!task.notified1h && now >= dueTime - oneHourMs) {
+          new Notification('⌛ Recordatorio – 1 hora antes', {
+            body: `"${task.title}" vence en 1 hora. ¡Que no se te pase!`,
+            icon: './icons/icon.svg',
+          });
+          task.notified1h = true;
+          await taskDb.updateTask(task);
         }
       }
     }
 
+    // Renderizado de tareas
     async function renderTasks() {
       const tasks = await taskDb.getTasks();
       const filteredTasks = tasks.filter((task) => {
@@ -645,8 +835,8 @@
       }
       await renderTasks();
       await checkDueNotifications();
-      setInterval(checkDueNotifications, 60 * 1000);
-      setInterval(sendMotivationalNotification, 5 * 60 * 1000);
+      setInterval(checkDueNotifications, 60 * 1000);     // cada minuto verifica recordatorios
+      setInterval(sendMotivationalNotification, 5 * 60 * 1000); // motivación periódica
       await registerServiceWorker();
     });
   </script>

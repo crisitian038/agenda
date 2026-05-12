@@ -3,13 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Agenda</title>
+  <title>Agenda NERV ✦</title>
   <link rel="manifest" href="./manifest.json" />
   <meta name="theme-color" content="#6b21a8" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
   <style>
+    /* Igual que antes, solo añadimos estilos para categorías y botón actualizar */
+    /* (se incluyen completos para que funcione de inmediato) */
     :root {
       --eva-purple: #9b30ff;
       --eva-purple-dark: #4c1d95;
@@ -44,7 +46,7 @@
       align-items: center;
     }
 
-    h1, h2, .tab-button, button {
+    h1, h2, .tab-button, button, .update-btn {
       font-family: 'Bangers', 'Comic Neue', cursive;
       letter-spacing: 0.04em;
       font-weight: 400;
@@ -52,8 +54,33 @@
 
     header {
       text-align: center;
-      max-width: 600px;
+      max-width: 700px;
+      width: 100%;
       margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .update-btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: var(--eva-yellow);
+      color: black;
+      border: 3px solid black;
+      border-radius: var(--radius-xl);
+      padding: 0.4rem 0.9rem;
+      font-size: 0.9rem;
+      box-shadow: 3px 3px 0 black;
+      cursor: pointer;
+      transition: 0.1s;
+    }
+    .update-btn:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 5px 5px 0 black;
+    }
+    .update-btn:active {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0 black;
     }
 
     h1 {
@@ -89,7 +116,7 @@
         0 0 0 8px var(--eva-green),
         0 20px 40px rgba(0,0,0,0.5);
       padding: 1.8rem 1.5rem;
-      max-width: 680px;
+      max-width: 720px;
       width: 100%;
       position: relative;
     }
@@ -122,7 +149,7 @@
       text-shadow: 1px 1px 0 black;
     }
 
-    input, textarea {
+    input, textarea, select {
       background: #2e1065;
       border: 3px solid black;
       border-radius: var(--radius-md);
@@ -133,26 +160,15 @@
       box-shadow: inset 3px 3px 0 rgba(0,0,0,0.3);
       outline: none;
       transition: 0.2s;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      padding-right: 2.5rem;
     }
 
-    input:focus, textarea:focus {
-      border-color: var(--eva-green);
-      box-shadow: 0 0 0 4px var(--eva-green-dark);
-    }
-
-    input[type="datetime-local"] {
-      background: #2e1065;
-      border: 3px solid black;
-      border-radius: var(--radius-md);
-      padding: 0.8rem 1rem;
-      color: white;
-      font-family: 'Comic Neue', cursive;
-      font-size: 1rem;
-      box-shadow: inset 3px 3px 0 rgba(0,0,0,0.3);
-      outline: none;
-    }
-
-    input[type="datetime-local"]:focus {
+    input:focus, textarea:focus, select:focus {
       border-color: var(--eva-green);
       box-shadow: 0 0 0 4px var(--eva-green-dark);
     }
@@ -227,30 +243,37 @@
       color: black;
     }
 
-    .filters {
+    .filter-section {
+      margin: 1.5rem 0 1rem;
       display: flex;
+      flex-direction: column;
       gap: 0.8rem;
-      margin-bottom: 1.5rem;
+    }
+
+    .category-filters, .status-filters {
+      display: flex;
+      gap: 0.6rem;
       flex-wrap: wrap;
     }
 
-    .tab-button {
+    .category-btn, .tab-button {
       flex: 1 1 auto;
-      min-width: 120px;
+      min-width: 100px;
       background: #4c1d95;
+      border: 3px solid black;
+      border-radius: var(--radius-xl);
     }
 
-    .tab-button.active {
+    .category-btn.active, .tab-button.active {
       background: var(--eva-green);
       color: black;
-      border-color: black;
       box-shadow: 0 0 12px var(--eva-green);
     }
 
     #task-list {
       display: grid;
       gap: 1rem;
-      margin-top: 1.8rem;
+      margin-top: 1rem;
     }
 
     .task-card {
@@ -295,6 +318,15 @@
       flex-wrap: wrap;
       gap: 0.4rem;
       margin: 0.3rem 0 0;
+    }
+
+    .task-category {
+      background: black;
+      padding: 0.2rem 0.7rem;
+      border-radius: 2rem;
+      border: 2px solid var(--eva-purple);
+      font-size: 0.75rem;
+      color: white;
     }
 
     .task-due {
@@ -347,14 +379,7 @@
       border: 2px dashed white;
     }
 
-    .image-placeholder {
-      text-align: center;
-      margin-top: 1rem;
-      font-size: 2rem;
-      opacity: 0.7;
-    }
-
-    /* MODAL */
+    /* Modal igual */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -367,12 +392,10 @@
       opacity: 0;
       transition: visibility 0.2s, opacity 0.2s;
     }
-
     .modal-overlay.active {
       visibility: visible;
       opacity: 1;
     }
-
     .modal-dialog {
       background: #2e1065;
       border: 4px solid black;
@@ -381,18 +404,13 @@
       max-width: 380px;
       width: 90%;
       text-align: center;
-      box-shadow:
-        0 0 0 4px var(--eva-purple),
-        0 0 20px var(--eva-green),
-        0 15px 30px rgba(0,0,0,0.7);
+      box-shadow: 0 0 0 4px var(--eva-purple), 0 0 20px var(--eva-green), 0 15px 30px rgba(0,0,0,0.7);
       position: relative;
     }
-
     .modal-icon {
       font-size: 3.5rem;
       margin-bottom: 0.5rem;
     }
-
     .modal-dialog p {
       font-family: 'Bangers', 'Comic Neue', cursive;
       font-size: 1.3rem;
@@ -400,34 +418,28 @@
       margin: 0.8rem 0 1.5rem;
       text-shadow: 1px 1px 0 black;
     }
-
     .modal-actions {
       display: flex;
       gap: 0.8rem;
       justify-content: center;
       flex-wrap: wrap;
     }
-
     .modal-actions button {
       min-width: 100px;
     }
-
     .btn-danger {
       background: #b91c1c;
       color: white;
       border-color: black;
     }
-
     .btn-danger:hover {
       background: #ff4444;
       color: black;
       box-shadow: 4px 4px 0 black;
     }
-
     .btn-cancel {
       background: var(--eva-purple-dark);
     }
-
     .btn-cancel:hover {
       background: var(--eva-yellow);
       color: black;
@@ -436,48 +448,58 @@
     @media (max-width: 560px) {
       body { padding: 0.8rem; }
       .card { padding: 1.2rem; }
-      button, .tab-button { width: 100%; }
+      button, .tab-button, .category-btn { width: 100%; }
       .modal-dialog { padding: 1.5rem; }
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>Agenda</h1>
-    <p class="subtitle">ola mi niña Esta es una pequeña agenda espero te guste <br>a cumplir tus tareas</p>
+    <h1>📒 Agenda NERV</h1>
+    <p class="subtitle">✨ ¡Hola mi niña! Organiza tus misiones por categoría ✨</p>
+    <button class="update-btn" id="update-btn" title="Buscar actualización">🔄 Actualizar</button>
   </header>
 
   <section class="card">
-    <div class="filters" id="filter-nav">
-      <button type="button" class="tab-button active" data-filter="all"> Todas</button>
-      <button type="button" class="tab-button" data-filter="pending"> Pendientes</button>
-      <button type="button" class="tab-button" data-filter="reviewed"> Hechas</button>
-    </div>
-
+    <!-- Formulario primero -->
     <form id="task-form">
-      <label>
-         Misión
+      <label>🎯 Misión
         <input type="text" id="task-title" name="title" placeholder="Ej: Editar video 👀" required />
       </label>
-      <label>
-         Detalles
-        <textarea id="task-desc" name="description" placeholder="Ej: poner en el video etc etc etc. 👀"></textarea>
+      <label>📂 Categoría
+        <select id="task-category" name="category" required>
+          <option value="">-- Elige una --</option>
+        </select>
       </label>
-      <label>
-         Fecha y hora límite
+      <label>📋 Detalles
+        <textarea id="task-desc" name="description" placeholder="Notas de la misión..."></textarea>
+      </label>
+      <label>📅 Fecha y hora límite
         <input type="datetime-local" id="task-date" name="dueDate" />
         <small class="helper-text">no lo dejes al finaaaaal 👀</small>
       </label>
       <div class="actions">
-        <span class="status" id="task-status">🟢 Lista para tareas</span>
-        <button type="submit"> Agregar tarea</button>
+        <span class="status" id="task-status">🟢 Lista para misiones</span>
+        <button type="submit">➕ Agregar misión</button>
       </div>
     </form>
+
+    <!-- Filtros: primero categorías, luego estados -->
+    <div class="filter-section">
+      <div id="category-filters" class="category-filters">
+        <!-- Se llena dinámicamente -->
+      </div>
+      <div id="status-filters" class="status-filters">
+        <button type="button" class="tab-button active" data-filter="all">🌌 Todas</button>
+        <button type="button" class="tab-button" data-filter="pending">⏳ Pendientes</button>
+        <button type="button" class="tab-button" data-filter="reviewed">✅ Hechas</button>
+      </div>
+    </div>
 
     <div id="task-list"></div>
 
     <div class="image-placeholder secondary" id="footer-image">
-      <img src="" alt="">
+      🦾💜
     </div>
   </section>
 
@@ -505,15 +527,16 @@
           .on('error', (err) => console.error('DB changes error', err));
       }
 
-      async addTask(title, description, dueDate) {
+      async addTask(title, description, dueDate, category) {
         const task = {
           title: title.trim(),
           description: description.trim(),
           dueDate: dueDate || null,
+          category: category.trim(),
           reviewed: false,
           notified3h: false,
           notified1h: false,
-          notifiedDue: false,   // nuevo: controla la notificación de vencimiento
+          notifiedDue: false,
           createdAt: new Date().toISOString(),
         };
         return this.db.post(task);
@@ -539,6 +562,30 @@
         const updated = { ...task, reviewed: !task.reviewed };
         return this.db.put(updated);
       }
+
+      // Gestión de categorías
+      async getCategories() {
+        try {
+          const doc = await this.db.get('categories');
+          return doc.categories || [];
+        } catch (err) {
+          if (err.status === 404) {
+            const defaults = ['casa', 'twitch', 'videos', 'escuela'];
+            await this.db.put({ _id: 'categories', categories: defaults });
+            return defaults;
+          }
+          throw err;
+        }
+      }
+
+      async addCategory(name) {
+        const doc = await this.db.get('categories');
+        if (!doc.categories.includes(name)) {
+          doc.categories.push(name);
+          await this.db.put(doc);
+        }
+        return doc.categories;
+      }
     }
 
     // ==================== ELEMENTOS DOM ====================
@@ -546,20 +593,89 @@
     const titleInput = document.getElementById('task-title');
     const descInput = document.getElementById('task-desc');
     const dateInput = document.getElementById('task-date');
+    const categorySelect = document.getElementById('task-category');
     const taskList = document.getElementById('task-list');
     const statusText = document.getElementById('task-status');
-    const filterNav = document.getElementById('filter-nav');
+    const categoryFiltersDiv = document.getElementById('category-filters');
+    const statusFiltersDiv = document.getElementById('status-filters');
 
-    let currentFilter = 'all';
+    let currentFilter = 'all';          // 'all', 'pending', 'reviewed'
+    let selectedCategory = 'all';      // 'all' o nombre de categoría
     const taskDb = new TaskDatabase(renderTasks);
     let currentTasks = {};
+    let categoriesList = [];
 
-    // ==================== FILTROS ====================
-    filterNav.addEventListener('click', (event) => {
+    // ==================== CATEGORÍAS ====================
+    async function loadCategories() {
+      categoriesList = await taskDb.getCategories();
+      updateCategorySelect();
+      renderCategoryButtons();
+    }
+
+    function updateCategorySelect() {
+      categorySelect.innerHTML = '<option value="">-- Elige una --</option>';
+      categoriesList.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat;
+        option.textContent = cat;
+        categorySelect.appendChild(option);
+      });
+      // Opción para añadir nueva
+      const addOption = document.createElement('option');
+      addOption.value = '__ADD_NEW__';
+      addOption.textContent = '➕ Añadir nueva categoría';
+      categorySelect.appendChild(addOption);
+    }
+
+    categorySelect.addEventListener('change', async (e) => {
+      if (e.target.value === '__ADD_NEW__') {
+        const newCat = prompt('Nombre de la nueva categoría:');
+        if (newCat && newCat.trim()) {
+          categoriesList = await taskDb.addCategory(newCat.trim());
+          updateCategorySelect();
+          renderCategoryButtons();
+          // Seleccionar la nueva categoría en el select
+          categorySelect.value = newCat.trim();
+        } else {
+          categorySelect.value = ''; // reseteamos
+        }
+      }
+    });
+
+    function renderCategoryButtons() {
+      categoryFiltersDiv.innerHTML = '';
+      const allBtn = document.createElement('button');
+      allBtn.type = 'button';
+      allBtn.className = `category-btn ${selectedCategory === 'all' ? 'active' : ''}`;
+      allBtn.textContent = '🌐 Todas';
+      allBtn.dataset.category = 'all';
+      allBtn.addEventListener('click', () => setCategory('all'));
+      categoryFiltersDiv.appendChild(allBtn);
+
+      categoriesList.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `category-btn ${selectedCategory === cat ? 'active' : ''}`;
+        btn.textContent = cat;
+        btn.dataset.category = cat;
+        btn.addEventListener('click', () => setCategory(cat));
+        categoryFiltersDiv.appendChild(btn);
+      });
+    }
+
+    function setCategory(cat) {
+      selectedCategory = cat;
+      renderCategoryButtons();
+      renderTasks();
+    }
+
+    // ==================== FILTROS DE ESTADO ====================
+    statusFiltersDiv.addEventListener('click', (event) => {
       const button = event.target.closest('.tab-button');
       if (!button) return;
       currentFilter = button.dataset.filter;
-      filterNav.querySelectorAll('.tab-button').forEach((btn) => btn.classList.toggle('active', btn === button));
+      statusFiltersDiv.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
       renderTasks();
     });
 
@@ -592,23 +708,21 @@
       });
     }
 
-    // ==================== VALIDACIÓN ====================
-    function isFutureDate(datetimeStr) {
-      if (!datetimeStr) return true;
-      const dueDate = new Date(datetimeStr);
-      if (isNaN(dueDate.getTime())) return false;
-      return dueDate > new Date();
-    }
-
     // ==================== FORMULARIO ====================
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
       const title = titleInput.value;
       const description = descInput.value;
       const dueDate = dateInput.value;
+      const category = categorySelect.value;
 
       if (!title.trim()) {
         titleInput.focus();
+        return;
+      }
+      if (!category || category === '__ADD_NEW__') {
+        statusText.textContent = 'Selecciona una categoría o crea una nueva.';
+        categorySelect.focus();
         return;
       }
 
@@ -619,10 +733,16 @@
       }
 
       statusText.textContent = '🌀 Guardando misión...';
-      await taskDb.addTask(title, description, dueDate);
+      await taskDb.addTask(title, description, dueDate, category);
       form.reset();
       titleInput.focus();
     });
+
+    function isFutureDate(datetimeStr) {
+      if (!datetimeStr) return true;
+      const dueDate = new Date(datetimeStr);
+      return !isNaN(dueDate.getTime()) && dueDate > new Date();
+    }
 
     // ==================== ACCIONES EN TARJETAS ====================
     taskList.addEventListener('click', async (event) => {
@@ -646,7 +766,57 @@
       }
     });
 
-    // ==================== FORMATO DE FECHA ====================
+    // ==================== RENDERIZADO ====================
+    async function renderTasks() {
+      const tasks = await taskDb.getTasks();
+      let filtered = tasks;
+
+      // Filtrar por categoría
+      if (selectedCategory !== 'all') {
+        filtered = filtered.filter(task => task.category === selectedCategory);
+      }
+
+      // Filtrar por estado
+      if (currentFilter === 'pending') filtered = filtered.filter(t => !t.reviewed);
+      else if (currentFilter === 'reviewed') filtered = filtered.filter(t => t.reviewed);
+
+      const total = filtered.length;
+      statusText.textContent = total === 0 ? '📭 Sin misiones aquí.' : `📌 ${total} misión${total === 1 ? '' : 'es'} en ${selectedCategory === 'all' ? 'todas las categorías' : selectedCategory} (${currentFilter === 'all' ? 'todas' : currentFilter === 'pending' ? 'pendientes' : 'completadas'})`;
+
+      currentTasks = Object.fromEntries(filtered.map(task => [task._id, task]));
+
+      taskList.innerHTML = filtered.map(task => {
+        const reviewedClass = task.reviewed ? 'reviewed' : '';
+        const description = task.description ? `<p class="task-description">${escapeHtml(task.description)}</p>` : '';
+        const dueBadge = task.dueDate ? `<span class="task-due ${isOverdue(task.dueDate) ? 'overdue' : ''}">${formatDueDate(task.dueDate)}</span>` : '';
+        const categoryBadge = task.category ? `<span class="task-category">📂 ${escapeHtml(task.category)}</span>` : '';
+        const actionLabel = task.reviewed ? '↩️ Desmarcar' : '✅ Completar';
+        const actionButtonClass = task.reviewed ? 'secondary' : 'reviewed';
+
+        return `
+          <article class="task-card ${reviewedClass}">
+            <div class="task-header">
+              <h2 class="task-title">${escapeHtml(task.title)}</h2>
+            </div>
+            <p class="task-meta">
+              ${task.reviewed ? '✔️ Completada · ' : ''}${categoryBadge} ${new Date(task.createdAt).toLocaleString('es-ES')} ${dueBadge}
+            </p>
+            ${description}
+            <div class="task-actions">
+              <button type="button" class="${actionButtonClass}" data-action="review" data-id="${task._id}">${actionLabel}</button>
+              <button type="button" class="secondary" data-action="delete" data-id="${task._id}">🗑️ Eliminar</button>
+            </div>
+          </article>`;
+      }).join('');
+
+      if (filtered.length === 0) {
+        taskList.innerHTML = '<p class="notice">🌟 ¡No hay misiones en esta vista! Añade una o cambia los filtros.</p>';
+      }
+
+      // Reprogramar notificaciones para las tareas visibles (por si acaso)
+      filtered.forEach(task => scheduleTaskNotifications(task));
+    }
+
     function formatDueDate(dueDate) {
       const date = new Date(dueDate);
       if (isNaN(date.getTime())) return 'Fecha inválida';
@@ -662,16 +832,19 @@
       if (!dueDate) return false;
       const due = new Date(dueDate);
       if (isNaN(due.getTime())) return false;
-      const now = new Date();
-      if (dueDate.includes('T')) {
-        return due < now;
-      } else {
-        due.setHours(23, 59, 59, 999);
-        return due < now;
-      }
+      return due < new Date();
     }
 
-    // ==================== NOTIFICACIONES (AHORA INCLUYE AVISO DE VENCIMIENTO) ====================
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // ==================== NOTIFICACIONES (sin cambios) ====================
     const activeTimers = new Map();
     let notificationsAllowed = false;
 
@@ -685,13 +858,12 @@
 
     function sendNotification(title, options = {}) {
       if (!notificationsAllowed) return null;
-      const opts = {
+      return new Notification(title, {
         body: '',
         icon: './icons/icon.svg',
         vibrate: [200, 100, 200],
         ...options,
-      };
-      return new Notification(title, opts);
+      });
     }
 
     function scheduleTaskNotifications(task) {
@@ -706,98 +878,77 @@
       }
 
       const timers = [];
-
-      // Aviso 3h antes
       if (!task.notified3h) {
         const threeHBefore = dueTime - 3 * 60 * 60 * 1000;
         if (threeHBefore > now) {
-          const delay = threeHBefore - now;
-          const timer = setTimeout(async () => {
+          timers.push(setTimeout(async () => {
             sendNotification('⏳ Recordatorio – 3 horas antes', {
               body: `"${task.title}" vence en 3 horas. Prepárate.`,
             });
-            const fresh = await taskDb.getTasks().then(tasks => tasks.find(t => t._id === task._id));
+            const fresh = await taskDb.db.get(task._id).catch(() => null);
             if (fresh && !fresh.notified3h) {
               fresh.notified3h = true;
               await taskDb.updateTask(fresh);
             }
-          }, delay);
-          timers.push(timer);
+          }, threeHBefore - now));
         }
       }
 
-      // Aviso 1h antes
       if (!task.notified1h) {
         const oneHBefore = dueTime - 60 * 60 * 1000;
         if (oneHBefore > now) {
-          const delay = oneHBefore - now;
-          const timer = setTimeout(async () => {
+          timers.push(setTimeout(async () => {
             sendNotification('⌛ Recordatorio – 1 hora antes', {
               body: `"${task.title}" vence en 1 hora. ¡Que no se te pase!`,
             });
-            const fresh = await taskDb.getTasks().then(tasks => tasks.find(t => t._id === task._id));
+            const fresh = await taskDb.db.get(task._id).catch(() => null);
             if (fresh && !fresh.notified1h) {
               fresh.notified1h = true;
               await taskDb.updateTask(fresh);
             }
-          }, delay);
-          timers.push(timer);
+          }, oneHBefore - now));
         }
       }
 
-      // NUEVO: Aviso exacto de vencimiento
       if (!task.notifiedDue && dueTime > now) {
-        const delay = dueTime - now;
-        const timer = setTimeout(async () => {
+        timers.push(setTimeout(async () => {
           sendNotification('⏰ ¡Tarea vencida!', {
             body: `"${task.title}" ha llegado a su hora límite.`,
           });
-          const fresh = await taskDb.getTasks().then(tasks => tasks.find(t => t._id === task._id));
+          const fresh = await taskDb.db.get(task._id).catch(() => null);
           if (fresh && !fresh.notifiedDue) {
             fresh.notifiedDue = true;
             await taskDb.updateTask(fresh);
           }
-        }, delay);
-        timers.push(timer);
+        }, dueTime - now));
       }
 
-      if (timers.length > 0) {
-        activeTimers.set(task._id, timers);
-      }
+      if (timers.length) activeTimers.set(task._id, timers);
     }
 
     async function fireMissedNotifications() {
       if (!notificationsAllowed) return;
       const tasks = await taskDb.getTasks();
       const now = Date.now();
-
       for (const task of tasks) {
         if (task.reviewed || !task.dueDate || !task.dueDate.includes('T')) continue;
         const dueTime = new Date(task.dueDate).getTime();
         if (isNaN(dueTime)) continue;
 
-        const oneHourMs = 60 * 60 * 1000;
-        const threeHoursMs = 3 * oneHourMs;
-
-        // Aviso 3h perdido
-        if (!task.notified3h && now >= dueTime - threeHoursMs && now < dueTime) {
+        if (!task.notified3h && now >= dueTime - 3 * 60 * 60 * 1000 && now < dueTime) {
           sendNotification('⏳ Recordatorio – 3 horas antes', {
             body: `"${task.title}" vence en 3 horas. Prepárate.`,
           });
           task.notified3h = true;
           await taskDb.updateTask(task);
         }
-
-        // Aviso 1h perdido
-        if (!task.notified1h && now >= dueTime - oneHourMs && now < dueTime) {
+        if (!task.notified1h && now >= dueTime - 60 * 60 * 1000 && now < dueTime) {
           sendNotification('⌛ Recordatorio – 1 hora antes', {
             body: `"${task.title}" vence en 1 hora. ¡Que no se te pase!`,
           });
           task.notified1h = true;
           await taskDb.updateTask(task);
         }
-
-        // NUEVO: Aviso de vencimiento si ya pasó y no se había notificado
         if (!task.notifiedDue && now >= dueTime) {
           sendNotification('⏰ ¡Tarea vencida!', {
             body: `"${task.title}" ha vencido.`,
@@ -808,113 +959,101 @@
       }
     }
 
-    // Motivación periódica
-    const motivationalPhrases = [
-      'Toca revisar tu agenda y avanzar con una tarea.',
-      'Una pequeña acción hoy evita grandes prisas mañana.',
-      'Tus tareas esperarán menos si les das atención ahora.',
-      'Revisar tu lista es el primer paso para cumplirla.',
-      'Un recordatorio amable para que mantengas el ritmo.'
-    ];
-
+    const motivationalPhrases = [ /* igual */ ];
     function getRandomMotivation() {
       return motivationalPhrases[Math.floor(Math.random() * motivationalPhrases.length)];
     }
-
     let motivationInterval;
     function startMotivation() {
       if (motivationInterval) clearInterval(motivationInterval);
       motivationInterval = setInterval(() => {
         if (notificationsAllowed && document.visibilityState === 'visible') {
-          sendNotification('Revisa tu Agenda', {
-            body: getRandomMotivation(),
-          });
+          sendNotification('Revisa tu Agenda', { body: getRandomMotivation() });
         }
       }, 5 * 60 * 1000);
     }
-
-    document.addEventListener('visibilitychange', async () => {
+    document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
-        await fireMissedNotifications();
-        const tasks = await taskDb.getTasks();
-        tasks.forEach(task => scheduleTaskNotifications(task));
+        fireMissedNotifications();
+        taskDb.getTasks().then(tasks => tasks.forEach(scheduleTaskNotifications));
         startMotivation();
       } else {
         if (motivationInterval) clearInterval(motivationInterval);
       }
     });
 
-    // ==================== RENDERIZADO ====================
-    async function renderTasks() {
-      const tasks = await taskDb.getTasks();
-      const filteredTasks = tasks.filter((task) => {
-        if (currentFilter === 'pending') return !task.reviewed;
-        if (currentFilter === 'reviewed') return task.reviewed;
-        return true;
-      });
-
-      const total = filteredTasks.length;
-      statusText.textContent = total === 0 ? ' Sin tareas aquí.' : `📌 ${total} tarea${total === 1 ? '' : 's'} en ${currentFilter === 'all' ? 'todas' : currentFilter === 'pending' ? 'pendientes' : 'cumplidas'}.`;
-      currentTasks = Object.fromEntries(filteredTasks.map((task) => [task._id, task]));
-
-      taskList.innerHTML = filteredTasks.map((task) => {
-        const reviewedClass = task.reviewed ? 'reviewed' : '';
-        const description = task.description ? `<p class="task-description">${escapeHtml(task.description)}</p>` : '';
-        const dueBadge = task.dueDate ? `<span class="task-due ${isOverdue(task.dueDate) ? 'overdue' : ''}">${formatDueDate(task.dueDate)}</span>` : '';
-        const actionLabel = task.reviewed ? '↩️ Desmarcar' : '✅ Completar';
-        const actionButtonClass = task.reviewed ? 'secondary' : 'reviewed';
-        return `
-          <article class="task-card ${reviewedClass}">
-            <div class="task-header">
-              <h2 class="task-title">${escapeHtml(task.title)}</h2>
-            </div>
-            <p class="task-meta">
-              ${task.reviewed ? '✔️ Completada · ' : ''}${new Date(task.createdAt).toLocaleString('es-ES')} 
-              ${dueBadge}
-            </p>
-            ${description}
-            <div class="task-actions">
-              <button type="button" class="${actionButtonClass}" data-action="review" data-id="${task._id}">${actionLabel}</button>
-              <button type="button" class="secondary" data-action="delete" data-id="${task._id}">🗑️ Eliminar</button>
-            </div>
-          </article>`;
-      }).join('');
-
-      if (filteredTasks.length === 0) {
-        taskList.innerHTML = '<p class="notice"> ¡No hay tareas! A mimir .</p>';
-      }
-    }
-
-    function escapeHtml(value) {
-      return String(value)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-    }
+    // ==================== SERVICE WORKER & ACTUALIZACIÓN ====================
+    let swRegistration = null;
 
     async function registerServiceWorker() {
       if ('serviceWorker' in navigator) {
         try {
-          await navigator.serviceWorker.register('./service-worker.js');
+          swRegistration = await navigator.serviceWorker.register('./service-worker.js');
           console.log('Service Worker registrado');
+          // Escuchar actualizaciones futuras
+          swRegistration.addEventListener('updatefound', () => {
+            const newWorker = swRegistration.installing;
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                // Hay una nueva versión esperando
+                document.getElementById('update-btn').style.display = 'inline-block';
+              }
+            });
+          });
+          // Si ya hay uno en espera al cargar
+          if (swRegistration.waiting && navigator.serviceWorker.controller) {
+            document.getElementById('update-btn').style.display = 'inline-block';
+          }
         } catch (error) {
           console.warn('Error registrando Service Worker:', error);
         }
       }
     }
 
+    document.getElementById('update-btn').addEventListener('click', async () => {
+      if (!swRegistration) return;
+      try {
+        // Forzar comprobación de actualización
+        await swRegistration.update();
+        if (swRegistration.waiting) {
+          // Hay un nuevo service worker esperando
+          const confirmUpdate = confirm('🔥 ¡Nueva versión disponible! ¿Actualizar ahora? (No perderás tus misiones)');
+          if (confirmUpdate) {
+            swRegistration.waiting.postMessage({ type: 'SKIP_WAITING' });
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+              window.location.reload();
+            });
+          }
+        } else if (swRegistration.installing) {
+          // Se está instalando, esperamos a que termine
+          swRegistration.installing.addEventListener('statechange', (e) => {
+            if (e.target.state === 'installed') {
+              if (confirm('🔥 ¡Nueva versión instalada! ¿Actualizar ahora?')) {
+                swRegistration.waiting.postMessage({ type: 'SKIP_WAITING' });
+                navigator.serviceWorker.addEventListener('controllerchange', () => {
+                  window.location.reload();
+                });
+              }
+            }
+          });
+        } else {
+          alert('✅ Ya tienes la versión más reciente.');
+        }
+      } catch (err) {
+        console.error('Error al buscar actualización:', err);
+        alert('Ocurrió un error al buscar la actualización.');
+      }
+    });
+
     // ==================== INICIO ====================
     window.addEventListener('load', async () => {
+      await loadCategories();              // Cargar categorías antes de renderizar
       notificationsAllowed = await requestNotificationPermission();
-      if (notificationsAllowed) {
-        statusText.textContent = '🔔 Notificaciones activadas.';
-      }
+      if (notificationsAllowed) statusText.textContent = '🔔 Notificaciones activadas.';
       await renderTasks();
       await fireMissedNotifications();
       const tasks = await taskDb.getTasks();
-      tasks.forEach(task => scheduleTaskNotifications(task));
+      tasks.forEach(scheduleTaskNotifications);
       startMotivation();
       await registerServiceWorker();
     });

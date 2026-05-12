@@ -10,8 +10,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
   <style>
-    /* Igual que antes, solo añadimos estilos para categorías y botón actualizar */
-    /* (se incluyen completos para que funcione de inmediato) */
     :root {
       --eva-purple: #9b30ff;
       --eva-purple-dark: #4c1d95;
@@ -46,7 +44,7 @@
       align-items: center;
     }
 
-    h1, h2, .tab-button, button, .update-btn {
+    h1, h2, .tab-button, button, .update-btn, .category-btn, .tab-switch {
       font-family: 'Bangers', 'Comic Neue', cursive;
       letter-spacing: 0.04em;
       font-weight: 400;
@@ -54,7 +52,7 @@
 
     header {
       text-align: center;
-      max-width: 700px;
+      max-width: 720px;
       width: 100%;
       margin-bottom: 1.5rem;
       position: relative;
@@ -62,17 +60,24 @@
 
     .update-btn {
       position: absolute;
-      top: 0;
-      right: 0;
+      top: 0.3rem;
+      right: 0.3rem;
       background: var(--eva-yellow);
       color: black;
-      border: 3px solid black;
-      border-radius: var(--radius-xl);
-      padding: 0.4rem 0.9rem;
-      font-size: 0.9rem;
+      border: 2px solid black;
+      border-radius: 50%;
+      width: 42px;
+      height: 42px;
+      font-size: 1.1rem;
       box-shadow: 3px 3px 0 black;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       transition: 0.1s;
+      z-index: 2;
+      padding: 0;
+      line-height: 1;
     }
     .update-btn:hover {
       transform: translate(-2px, -2px);
@@ -134,6 +139,43 @@
       box-shadow: 2px 2px 0 black;
     }
 
+    .tab-switches {
+      display: flex;
+      gap: 0.6rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .tab-switch {
+      flex: 1;
+      border: 3px solid black;
+      border-radius: var(--radius-xl);
+      padding: 0.8rem;
+      background: #4c1d95;
+      color: white;
+      font-size: 1.2rem;
+      cursor: pointer;
+      box-shadow: 4px 4px 0 black;
+      transition: 0.1s;
+      text-transform: uppercase;
+      text-align: center;
+    }
+    .tab-switch.active {
+      background: var(--eva-green);
+      color: black;
+      box-shadow: 0 0 12px var(--eva-green);
+    }
+    .tab-switch:hover {
+      background: var(--eva-green);
+      color: black;
+    }
+
+    .view {
+      display: none;
+    }
+    .view.active {
+      display: block;
+    }
+
     form {
       display: grid;
       gap: 1.2rem;
@@ -162,11 +204,56 @@
       transition: 0.2s;
       appearance: none;
       -webkit-appearance: none;
+    }
+
+    select {
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: right 1rem center;
       padding-right: 2.5rem;
     }
+
+    input[type="file"] { display: none; }
+
+    .file-upload-wrapper {
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .file-btn {
+      background: #4c1d95;
+      border: 3px solid black;
+      border-radius: var(--radius-xl);
+      padding: 0.7rem 1.4rem;
+      font-family: 'Bangers', 'Comic Neue', cursive;
+      font-size: 1rem;
+      color: white;
+      box-shadow: 4px 4px 0 black;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: 0.1s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .file-btn:hover {
+      background: var(--eva-green);
+      color: black;
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 black;
+    }
+
+    .image-preview {
+      width: 100%;
+      max-height: 160px;
+      object-fit: contain;
+      border-radius: var(--radius-md);
+      border: 2px dashed var(--eva-purple);
+      margin-top: 0.4rem;
+      display: none;
+    }
+    .image-preview.show { display: block; }
 
     input:focus, textarea:focus, select:focus {
       border-color: var(--eva-green);
@@ -199,7 +286,7 @@
       font-size: 0.9rem;
     }
 
-    button, .tab-button {
+    button, .tab-button, .category-btn {
       border: 3px solid black;
       border-radius: var(--radius-xl);
       padding: 0.8rem 1.6rem;
@@ -216,14 +303,14 @@
       gap: 0.3rem;
     }
 
-    button:hover, .tab-button:hover {
+    button:hover, .tab-button:hover, .category-btn:hover {
       transform: translate(-2px, -2px);
       box-shadow: 6px 6px 0 black;
       background: var(--eva-green);
       color: black;
     }
 
-    button:active, .tab-button:active {
+    button:active, .tab-button:active, .category-btn:active {
       transform: translate(2px, 2px);
       box-shadow: 2px 2px 0 black;
     }
@@ -232,15 +319,31 @@
       background: #334155;
       color: white;
     }
-
     button.secondary:hover {
       background: var(--eva-yellow);
       color: black;
     }
-
     button.reviewed {
       background: var(--eva-green);
       color: black;
+    }
+    button.detail-btn {
+      background: #3b82f6;
+      color: white;
+      font-size: 0.85rem;
+      padding: 0.5rem 1rem;
+    }
+    button.detail-btn:hover {
+      background: var(--eva-yellow);
+      color: black;
+    }
+
+    .manage-cat-btn {
+      background: var(--eva-yellow);
+      color: black;
+      font-size: 0.9rem;
+      padding: 0.5rem 1rem;
+      margin-bottom: 0.5rem;
     }
 
     .filter-section {
@@ -250,24 +353,42 @@
       gap: 0.8rem;
     }
 
-    .category-filters, .status-filters {
+    .category-filters {
       display: flex;
-      gap: 0.6rem;
-      flex-wrap: wrap;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.4rem;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: var(--eva-purple) transparent;
+    }
+    .category-filters::-webkit-scrollbar {
+      height: 6px;
+    }
+    .category-filters::-webkit-scrollbar-thumb {
+      background: var(--eva-purple);
+      border-radius: 10px;
+    }
+    .category-filters::-webkit-scrollbar-track {
+      background: transparent;
     }
 
-    .category-btn, .tab-button {
-      flex: 1 1 auto;
-      min-width: 100px;
-      background: #4c1d95;
-      border: 3px solid black;
-      border-radius: var(--radius-xl);
+    .category-btn {
+      flex-shrink: 0;
+      white-space: nowrap;
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
     }
-
-    .category-btn.active, .tab-button.active {
+    .category-btn.active {
       background: var(--eva-green);
       color: black;
       box-shadow: 0 0 12px var(--eva-green);
+    }
+
+    .status-filters {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
     }
 
     #task-list {
@@ -292,7 +413,6 @@
       background: #14532d33;
       box-shadow: 0 0 15px var(--eva-green);
     }
-
     .task-card.reviewed .task-title {
       text-decoration: line-through;
       color: var(--eva-green);
@@ -358,14 +478,27 @@
       color: var(--eva-white);
     }
 
+    .task-thumbnail {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: var(--radius-md);
+      border: 2px solid var(--eva-purple);
+      cursor: pointer;
+      margin-right: 0.5rem;
+      display: inline-block;
+    }
+
     .task-actions {
       display: flex;
       gap: 0.6rem;
       flex-wrap: wrap;
+      margin-top: 0.8rem;
     }
 
     .task-actions button {
-      flex: 1 1 45%;
+      flex: 1 1 auto;
+      min-width: 6rem;
       font-size: 0.9rem;
     }
 
@@ -379,7 +512,7 @@
       border: 2px dashed white;
     }
 
-    /* Modal igual */
+    /* Modal genérico */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -401,11 +534,15 @@
       border: 4px solid black;
       border-radius: var(--radius-xl);
       padding: 2rem 1.5rem 1.5rem;
-      max-width: 380px;
+      max-width: 420px;
       width: 90%;
       text-align: center;
       box-shadow: 0 0 0 4px var(--eva-purple), 0 0 20px var(--eva-green), 0 15px 30px rgba(0,0,0,0.7);
       position: relative;
+    }
+    .modal-dialog.detail {
+      max-width: 500px;
+      text-align: left;
     }
     .modal-icon {
       font-size: 3.5rem;
@@ -435,7 +572,6 @@
     .btn-danger:hover {
       background: #ff4444;
       color: black;
-      box-shadow: 4px 4px 0 black;
     }
     .btn-cancel {
       background: var(--eva-purple-dark);
@@ -445,72 +581,205 @@
       color: black;
     }
 
+    .modal-input {
+      background: #2e1065;
+      border: 3px solid black;
+      border-radius: var(--radius-md);
+      padding: 0.8rem 1rem;
+      color: white;
+      font-family: 'Comic Neue', cursive;
+      font-size: 1rem;
+      width: 100%;
+      margin: 0.5rem 0 1rem;
+    }
+
+    .modal-image-full {
+      max-width: 100%;
+      max-height: 70vh;
+      border-radius: var(--radius-md);
+      border: 3px solid black;
+    }
+
+    .detail-content {
+      font-family: 'Comic Neue', cursive;
+      color: var(--eva-white);
+      margin: 0.8rem 0;
+    }
+    .detail-content p {
+      font-family: 'Comic Neue', cursive;
+      font-size: 1rem;
+      margin: 0.4rem 0;
+    }
+
+    /* Lista de categorías en modal */
+    .category-list {
+      list-style: none;
+      padding: 0;
+      margin: 1rem 0;
+      text-align: left;
+    }
+    .category-list li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--eva-purple);
+      font-family: 'Comic Neue', cursive;
+      font-size: 1rem;
+    }
+    .category-list li:last-child {
+      border-bottom: none;
+    }
+    .cat-action-btn {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: var(--eva-yellow);
+      padding: 0 0.3rem;
+      box-shadow: none;
+    }
+    .cat-action-btn:hover {
+      color: white;
+      transform: scale(1.1);
+    }
+
     @media (max-width: 560px) {
       body { padding: 0.8rem; }
       .card { padding: 1.2rem; }
-      button, .tab-button, .category-btn { width: 100%; }
+      button, .tab-button, .category-btn { width: auto; }
+      .tab-switches { flex-direction: column; }
       .modal-dialog { padding: 1.5rem; }
+      .task-actions { flex-direction: column; }
     }
+.modal-overlay.sub-modal {
+  z-index: 1100;
+}
+    
   </style>
 </head>
 <body>
   <header>
-    <h1>📒 Agenda NERV</h1>
-    <p class="subtitle">✨ ¡Hola mi niña! Organiza tus misiones por categoría ✨</p>
-    <button class="update-btn" id="update-btn" title="Buscar actualización">🔄 Actualizar</button>
+    <h1>Agenda</h1>
+    <p class="subtitle">ola mi niña Esta es una pequeña agenda espero te guste <br>a cumplir tus tareas</p>
+    <button class="update-btn" id="update-btn" title="Buscar actualización">🔄</button>
   </header>
 
   <section class="card">
-    <!-- Formulario primero -->
-    <form id="task-form">
-      <label>🎯 Misión
-        <input type="text" id="task-title" name="title" placeholder="Ej: Editar video 👀" required />
-      </label>
-      <label>📂 Categoría
-        <select id="task-category" name="category" required>
-          <option value="">-- Elige una --</option>
-        </select>
-      </label>
-      <label>📋 Detalles
-        <textarea id="task-desc" name="description" placeholder="Notas de la misión..."></textarea>
-      </label>
-      <label>📅 Fecha y hora límite
-        <input type="datetime-local" id="task-date" name="dueDate" />
-        <small class="helper-text">no lo dejes al finaaaaal 👀</small>
-      </label>
-      <div class="actions">
-        <span class="status" id="task-status">🟢 Lista para misiones</span>
-        <button type="submit">➕ Agregar misión</button>
-      </div>
-    </form>
-
-    <!-- Filtros: primero categorías, luego estados -->
-    <div class="filter-section">
-      <div id="category-filters" class="category-filters">
-        <!-- Se llena dinámicamente -->
-      </div>
-      <div id="status-filters" class="status-filters">
-        <button type="button" class="tab-button active" data-filter="all">🌌 Todas</button>
-        <button type="button" class="tab-button" data-filter="pending">⏳ Pendientes</button>
-        <button type="button" class="tab-button" data-filter="reviewed">✅ Hechas</button>
-      </div>
+    <div class="tab-switches">
+      <button class="tab-switch active" data-tab="new">➕ Nueva Misión</button>
+      <button class="tab-switch" data-tab="list">📋 Misión Lista</button>
     </div>
 
-    <div id="task-list"></div>
+    <div id="view-new" class="view active">
+      <form id="task-form">
+        <label>🎯 Misión
+          <input type="text" id="task-title" name="title" placeholder="Ej: Editar video 👀" required />
+        </label>
+        <label>📂 Categoría
+          <select id="task-category" name="category" required>
+            <option value="">-- Elige una --</option>
+          </select>
+        </label>
+        <label>📋 Detalles
+          <textarea id="task-desc" name="description" placeholder="Ej: poner en el video etc etc etc. 👀"></textarea>
+        </label>
+        <label>📸 Imagen (opcional)
+          <div class="file-upload-wrapper">
+            <button type="button" class="file-btn" id="trigger-file">📁 Subir / Tomar foto</button>
+            <input type="file" id="task-image" accept="image/*" capture="camera" />
+          </div>
+          <img id="image-preview" class="image-preview" alt="Vista previa" />
+        </label>
+        <label>📅 Fecha y hora límite
+          <input type="datetime-local" id="task-date" name="dueDate" />
+          <small class="helper-text">no lo dejes al finaaaaal 👀</small>
+        </label>
+        <div class="actions">
+          <span class="status" id="task-status">🟢 Lista para tareas</span>
+          <button type="submit">➕ Agregar tarea</button>
+        </div>
+      </form>
+    </div>
 
-    <div class="image-placeholder secondary" id="footer-image">
-      🦾💜
+    <div id="view-list" class="view">
+      <div class="filter-section">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div class="category-filters" id="category-filters"></div>
+          <button class="manage-cat-btn" id="manage-categories-btn">⚙️</button>
+        </div>
+        <div id="status-filters" class="status-filters">
+          <button type="button" class="tab-button active" data-filter="all">🌌 Todas</button>
+          <button type="button" class="tab-button" data-filter="pending">⏳ Pendientes</button>
+          <button type="button" class="tab-button" data-filter="reviewed">✅ Hechas</button>
+        </div>
+      </div>
+      <div id="task-list"></div>
     </div>
   </section>
 
-  <!-- MODAL DE CONFIRMACIÓN -->
-  <div class="modal-overlay" id="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="modal-message">
+  <!-- MODAL: Confirmación (sí/no) -->
+  <div class="modal-overlay sub-modal" id="confirm-modal" role="dialog" aria-modal="true">
     <div class="modal-dialog">
-      <div class="modal-icon">🗑️</div>
-      <p id="modal-message">¿Eliminar esta misión?</p>
+      <div class="modal-icon">❓</div>
+      <p id="confirm-message"></p>
       <div class="modal-actions">
-        <button class="btn-danger" id="modal-confirm-btn">Sí, eliminar</button>
-        <button class="btn-cancel" id="modal-cancel-btn">Cancelar</button>
+        <button class="btn-danger" id="confirm-yes">Sí</button>
+        <button class="btn-cancel" id="confirm-no">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Alerta (OK) -->
+  <div class="modal-overlay sub-modal" id="alert-modal" role="dialog" aria-modal="true">
+    <div class="modal-dialog">
+      <div class="modal-icon">⚠️</div>
+      <p id="alert-message"></p>
+      <button class="btn-cancel" id="alert-ok">OK</button>
+    </div>
+  </div>
+
+  <!-- MODAL: Pedir texto (categoría / renombrar) -->
+  <div class="modal-overlay sub-modal" id="prompt-modal" role="dialog" aria-modal="true">
+    <div class="modal-dialog">
+      <div class="modal-icon" id="prompt-icon">🏷️</div>
+      <p id="prompt-message">Nombre de la categoría</p>
+      <input type="text" id="prompt-input" class="modal-input" placeholder="Escribe aquí..." />
+      <div class="modal-actions">
+        <button class="btn-cancel" id="prompt-cancel">Cancelar</button>
+        <button class="reviewed" id="prompt-ok">Añadir</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Imagen ampliada -->
+  <div class="modal-overlay" id="image-modal" role="dialog" aria-modal="true">
+    <div class="modal-dialog" style="max-width:90vw; padding:1rem;">
+      <img id="full-image" class="modal-image-full" alt="Imagen de la misión" />
+      <button class="btn-cancel" id="image-close" style="margin-top:1rem;">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- MODAL: Detalle completo de la tarea -->
+  <div class="modal-overlay" id="task-detail-modal" role="dialog" aria-modal="true">
+    <div class="modal-dialog detail">
+      <div class="modal-icon">📌</div>
+      <h2 style="font-family:'Bangers', cursive; margin:0; font-size:1.8rem;" id="detail-title"></h2>
+      <div class="detail-content" id="detail-content"></div>
+      <div class="modal-actions" id="detail-actions"></div>
+      <button class="btn-cancel" id="detail-close" style="margin-top:1rem;">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- MODAL: Gestión de categorías -->
+  <div class="modal-overlay" id="manage-cats-modal" role="dialog" aria-modal="true">
+    <div class="modal-dialog detail">
+      <div class="modal-icon">⚙️</div>
+      <h2 style="font-family:'Bangers', cursive; margin:0 0 1rem;">Gestionar categorías</h2>
+      <ul class="category-list" id="category-list-ul"></ul>
+      <div class="modal-actions">
+        <button class="reviewed" id="add-category-from-manage">➕ Añadir nueva</button>
+        <button class="btn-cancel" id="close-manage-cats">Cerrar</button>
       </div>
     </div>
   </div>
@@ -527,7 +796,7 @@
           .on('error', (err) => console.error('DB changes error', err));
       }
 
-      async addTask(title, description, dueDate, category) {
+      async addTask(title, description, dueDate, category, imageFile) {
         const task = {
           title: title.trim(),
           description: description.trim(),
@@ -538,8 +807,16 @@
           notified1h: false,
           notifiedDue: false,
           createdAt: new Date().toISOString(),
+          hasImage: !!imageFile
         };
-        return this.db.post(task);
+        const response = await this.db.post(task);
+        if (imageFile) {
+          await this.db.putAttachment(response.id, 'task-image', response.rev, imageFile, imageFile.type);
+          const updated = await this.db.get(response.id);
+          updated.hasImage = true;
+          await this.db.put(updated);
+        }
+        return response;
       }
 
       async getTasks() {
@@ -548,6 +825,15 @@
           .map((row) => row.doc)
           .filter(Boolean)
           .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      }
+
+      async getImageUrl(taskId) {
+        try {
+          const blob = await this.db.getAttachment(taskId, 'task-image');
+          return URL.createObjectURL(blob);
+        } catch (e) {
+          return null;
+        }
       }
 
       async deleteTask(doc) {
@@ -586,7 +872,228 @@
         }
         return doc.categories;
       }
+
+      async renameCategory(oldName, newName) {
+        const doc = await this.db.get('categories');
+        const index = doc.categories.indexOf(oldName);
+        if (index === -1) return doc.categories;
+        doc.categories[index] = newName;
+        await this.db.put(doc);
+        // Actualizar todas las tareas que usen la categoría antigua
+        const tasks = await this.getTasks();
+        const updates = tasks.filter(t => t.category === oldName).map(t => {
+          t.category = newName;
+          return t;
+        });
+        if (updates.length > 0) {
+          await this.db.bulkDocs(updates);
+        }
+        return doc.categories;
+      }
+
+      async deleteCategory(name) {
+        const doc = await this.db.get('categories');
+        doc.categories = doc.categories.filter(c => c !== name);
+        await this.db.put(doc);
+        // Las tareas mantienen la categoría, pero ya no aparecerá en filtros.
+        return doc.categories;
+      }
     }
+
+    // ==================== MODALES ====================
+    function showModal(id) { document.getElementById(id).classList.add('active'); }
+    function hideModal(id) { document.getElementById(id).classList.remove('active'); }
+
+    function customConfirm(message) {
+      return new Promise(resolve => {
+        document.getElementById('confirm-message').textContent = message;
+        showModal('confirm-modal');
+        const yesBtn = document.getElementById('confirm-yes');
+        const noBtn = document.getElementById('confirm-no');
+        function onYes() { cleanup(); resolve(true); }
+        function onNo() { cleanup(); resolve(false); }
+        function cleanup() {
+          yesBtn.removeEventListener('click', onYes);
+          noBtn.removeEventListener('click', onNo);
+          hideModal('confirm-modal');
+        }
+        yesBtn.addEventListener('click', onYes);
+        noBtn.addEventListener('click', onNo);
+      });
+    }
+
+    function customAlert(message) {
+      return new Promise(resolve => {
+        document.getElementById('alert-message').textContent = message;
+        showModal('alert-modal');
+        const okBtn = document.getElementById('alert-ok');
+        function onOk() {
+          okBtn.removeEventListener('click', onOk);
+          hideModal('alert-modal');
+          resolve();
+        }
+        okBtn.addEventListener('click', onOk);
+      });
+    }
+
+    function customPrompt(message, icon = '🏷️', defaultValue = '') {
+      document.getElementById('prompt-message').textContent = message;
+      document.getElementById('prompt-icon').textContent = icon;
+      document.getElementById('prompt-input').value = defaultValue;
+      showModal('prompt-modal');
+      return new Promise(resolve => {
+        const okBtn = document.getElementById('prompt-ok');
+        const cancelBtn = document.getElementById('prompt-cancel');
+        function onOk() { cleanup(); resolve(document.getElementById('prompt-input').value.trim()); }
+        function onCancel() { cleanup(); resolve(null); }
+        function cleanup() {
+          okBtn.removeEventListener('click', onOk);
+          cancelBtn.removeEventListener('click', onCancel);
+          hideModal('prompt-modal');
+        }
+        okBtn.addEventListener('click', onOk);
+        cancelBtn.addEventListener('click', onCancel);
+      });
+    }
+
+    function showImageModal(url) {
+      document.getElementById('full-image').src = url;
+      showModal('image-modal');
+      const closeBtn = document.getElementById('image-close');
+      function onClose() {
+        closeBtn.removeEventListener('click', onClose);
+        hideModal('image-modal');
+        URL.revokeObjectURL(url);
+      }
+      closeBtn.addEventListener('click', onClose);
+      closeBtn.focus();
+    }
+
+    // Modal detalle de tarea
+    const taskDetailModal = document.getElementById('task-detail-modal');
+    const detailTitle = document.getElementById('detail-title');
+    const detailContent = document.getElementById('detail-content');
+    const detailActions = document.getElementById('detail-actions');
+    const detailClose = document.getElementById('detail-close');
+
+    function showTaskDetail(task) {
+      detailTitle.textContent = task.title;
+      let html = '';
+      if (task.category) html += `<p><strong>📂 Categoría:</strong> ${escapeHtml(task.category)}</p>`;
+      html += `<p><strong>📅 Creada:</strong> ${new Date(task.createdAt).toLocaleString('es-ES')}</p>`;
+      if (task.dueDate) {
+        const overdue = isOverdue(task.dueDate);
+        html += `<p><strong>⏰ Vence:</strong> ${formatDueDate(task.dueDate)} ${overdue ? '<span style="color:#ef4444;">(vencida)</span>' : ''}</p>`;
+      }
+      html += `<p><strong>📋 Descripción:</strong> ${task.description ? escapeHtml(task.description) : '<em>Sin descripción</em>'}</p>`;
+      if (task.reviewed) html += '<p>✔️ <span style="color:var(--eva-green);">Completada</span></p>';
+      detailContent.innerHTML = html;
+      detailActions.innerHTML = `
+        <button class="${task.reviewed ? 'secondary' : 'reviewed'}" id="detail-toggle">${task.reviewed ? '↩️ Desmarcar' : '✅ Completar'}</button>
+        <button class="secondary" id="detail-delete">🗑️ Eliminar</button>
+      `;
+      document.getElementById('detail-toggle').onclick = async () => {
+        await taskDb.toggleReviewed(task);
+        hideModal('task-detail-modal');
+        renderTasks();
+      };
+      document.getElementById('detail-delete').onclick = async () => {
+        const approved = await customConfirm(`¿Eliminar "${task.title}"?`);
+        if (approved) {
+          await taskDb.deleteTask(task);
+          hideModal('task-detail-modal');
+          renderTasks();
+        }
+      };
+      showModal('task-detail-modal');
+    }
+    detailClose.addEventListener('click', () => hideModal('task-detail-modal'));
+
+    // Modal gestión de categorías
+    const manageCatsModal = document.getElementById('manage-cats-modal');
+    const catListUl = document.getElementById('category-list-ul');
+    const closeManageBtn = document.getElementById('close-manage-cats');
+    const addFromManageBtn = document.getElementById('add-category-from-manage');
+
+    function renderCategoryListInModal() {
+      catListUl.innerHTML = '';
+      categoriesList.forEach(cat => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <span>${escapeHtml(cat)}</span>
+          <div>
+            <button class="cat-action-btn edit-cat" data-cat="${escapeHtml(cat)}">✏️</button>
+            <button class="cat-action-btn delete-cat" data-cat="${escapeHtml(cat)}">🗑️</button>
+          </div>
+        `;
+        catListUl.appendChild(li);
+      });
+
+      // Eventos para editar y eliminar dentro del modal
+      catListUl.querySelectorAll('.edit-cat').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const oldName = btn.dataset.cat;
+          const newName = await customPrompt('Nuevo nombre para la categoría:', '✏️', oldName);
+          if (newName && newName !== oldName) {
+            categoriesList = await taskDb.renameCategory(oldName, newName);
+            updateAllCategoryUI();
+            renderCategoryListInModal(); // refrescar lista dentro del modal
+          }
+        });
+      });
+
+      catListUl.querySelectorAll('.delete-cat').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const cat = btn.dataset.cat;
+          const approved = await customConfirm(`¿Eliminar la categoría "${cat}"? Las tareas conservarán su texto pero no podrás filtrarlas por ella.`);
+          if (approved) {
+            categoriesList = await taskDb.deleteCategory(cat);
+            updateAllCategoryUI();
+            renderCategoryListInModal();
+            // Si la categoría eliminada era la seleccionada, volver a 'all'
+            if (selectedCategory === cat) {
+              setCategory('all');
+            }
+          }
+        });
+      });
+    }
+
+    addFromManageBtn.addEventListener('click', async () => {
+      const newCat = await customPrompt('Nombre de la nueva categoría:');
+      if (newCat) {
+        categoriesList = await taskDb.addCategory(newCat);
+        updateAllCategoryUI();
+        renderCategoryListInModal();
+      }
+    });
+
+    closeManageBtn.addEventListener('click', () => hideModal('manage-cats-modal'));
+
+    function updateAllCategoryUI() {
+      updateCategorySelect();
+      renderCategoryButtons();
+    }
+
+    // ==================== CAMBIO DE PESTAÑAS ====================
+    const tabSwitches = document.querySelectorAll('.tab-switch');
+    const viewNew = document.getElementById('view-new');
+    const viewList = document.getElementById('view-list');
+    tabSwitches.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        tabSwitches.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        if (tab === 'new') {
+          viewNew.classList.add('active');
+          viewList.classList.remove('active');
+        } else {
+          viewNew.classList.remove('active');
+          viewList.classList.add('active');
+          renderTasks();
+        }
+      });
+    });
 
     // ==================== ELEMENTOS DOM ====================
     const form = document.getElementById('task-form');
@@ -594,16 +1101,39 @@
     const descInput = document.getElementById('task-desc');
     const dateInput = document.getElementById('task-date');
     const categorySelect = document.getElementById('task-category');
+    const imageInput = document.getElementById('task-image');
+    const imagePreview = document.getElementById('image-preview');
     const taskList = document.getElementById('task-list');
     const statusText = document.getElementById('task-status');
     const categoryFiltersDiv = document.getElementById('category-filters');
     const statusFiltersDiv = document.getElementById('status-filters');
+    const updateBtn = document.getElementById('update-btn');
+    const manageCatsBtn = document.getElementById('manage-categories-btn');
 
-    let currentFilter = 'all';          // 'all', 'pending', 'reviewed'
-    let selectedCategory = 'all';      // 'all' o nombre de categoría
+    let currentFilter = 'all';
+    let selectedCategory = 'all';
     const taskDb = new TaskDatabase(renderTasks);
     let currentTasks = {};
     let categoriesList = [];
+    let selectedImageFile = null;
+
+    // Subir imagen
+    document.getElementById('trigger-file').addEventListener('click', () => imageInput.click());
+    imageInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) {
+        selectedImageFile = null;
+        imagePreview.classList.remove('show');
+        return;
+      }
+      selectedImageFile = file;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        imagePreview.src = ev.target.result;
+        imagePreview.classList.add('show');
+      };
+      reader.readAsDataURL(file);
+    });
 
     // ==================== CATEGORÍAS ====================
     async function loadCategories() {
@@ -620,7 +1150,6 @@
         option.textContent = cat;
         categorySelect.appendChild(option);
       });
-      // Opción para añadir nueva
       const addOption = document.createElement('option');
       addOption.value = '__ADD_NEW__';
       addOption.textContent = '➕ Añadir nueva categoría';
@@ -629,15 +1158,13 @@
 
     categorySelect.addEventListener('change', async (e) => {
       if (e.target.value === '__ADD_NEW__') {
-        const newCat = prompt('Nombre de la nueva categoría:');
-        if (newCat && newCat.trim()) {
-          categoriesList = await taskDb.addCategory(newCat.trim());
-          updateCategorySelect();
-          renderCategoryButtons();
-          // Seleccionar la nueva categoría en el select
-          categorySelect.value = newCat.trim();
+        const newCat = await customPrompt('Nombre de la nueva categoría:');
+        if (newCat) {
+          categoriesList = await taskDb.addCategory(newCat);
+          updateAllCategoryUI();
+          categorySelect.value = newCat;
         } else {
-          categorySelect.value = ''; // reseteamos
+          categorySelect.value = '';
         }
       }
     });
@@ -669,7 +1196,12 @@
       renderTasks();
     }
 
-    // ==================== FILTROS DE ESTADO ====================
+    manageCatsBtn.addEventListener('click', () => {
+      renderCategoryListInModal();
+      showModal('manage-cats-modal');
+    });
+
+    // FILTROS DE ESTADO
     statusFiltersDiv.addEventListener('click', (event) => {
       const button = event.target.closest('.tab-button');
       if (!button) return;
@@ -679,35 +1211,6 @@
       renderTasks();
     });
 
-    // ==================== MODAL ====================
-    const modalOverlay = document.getElementById('confirm-modal');
-    const modalMessageEl = document.getElementById('modal-message');
-    const confirmBtn = document.getElementById('modal-confirm-btn');
-    const cancelBtn = document.getElementById('modal-cancel-btn');
-
-    function openModal(message) {
-      modalMessageEl.textContent = message;
-      modalOverlay.classList.add('active');
-      confirmBtn.focus();
-      return new Promise((resolve) => {
-        function handleConfirm() { cleanup(); resolve(true); }
-        function handleCancel() { cleanup(); resolve(false); }
-        function handleKeydown(e) { if (e.key === 'Escape') handleCancel(); }
-        function cleanup() {
-          confirmBtn.removeEventListener('click', handleConfirm);
-          cancelBtn.removeEventListener('click', handleCancel);
-          document.removeEventListener('keydown', handleKeydown);
-          modalOverlay.classList.remove('active');
-        }
-        confirmBtn.addEventListener('click', handleConfirm);
-        cancelBtn.addEventListener('click', handleCancel);
-        document.addEventListener('keydown', handleKeydown);
-        modalOverlay.addEventListener('click', (e) => {
-          if (e.target === modalOverlay) handleCancel();
-        });
-      });
-    }
-
     // ==================== FORMULARIO ====================
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
@@ -716,16 +1219,12 @@
       const dueDate = dateInput.value;
       const category = categorySelect.value;
 
-      if (!title.trim()) {
-        titleInput.focus();
-        return;
-      }
+      if (!title.trim()) { titleInput.focus(); return; }
       if (!category || category === '__ADD_NEW__') {
         statusText.textContent = 'Selecciona una categoría o crea una nueva.';
         categorySelect.focus();
         return;
       }
-
       if (dueDate && !isFutureDate(dueDate)) {
         statusText.textContent = 'vas a viajar en el tiempo o como mi amor 👀.';
         dateInput.focus();
@@ -733,9 +1232,12 @@
       }
 
       statusText.textContent = '🌀 Guardando misión...';
-      await taskDb.addTask(title, description, dueDate, category);
+      await taskDb.addTask(title, description, dueDate, category, selectedImageFile);
       form.reset();
+      imagePreview.classList.remove('show');
+      selectedImageFile = null;
       titleInput.focus();
+      if (viewList.classList.contains('active')) renderTasks();
     });
 
     function isFutureDate(datetimeStr) {
@@ -746,6 +1248,14 @@
 
     // ==================== ACCIONES EN TARJETAS ====================
     taskList.addEventListener('click', async (event) => {
+      const img = event.target.closest('.task-thumbnail');
+      if (img) {
+        const taskId = img.dataset.id;
+        const url = await taskDb.getImageUrl(taskId);
+        if (url) showImageModal(url);
+        return;
+      }
+
       const button = event.target.closest('button[data-action]');
       if (!button) return;
       const docId = button.dataset.id;
@@ -754,15 +1264,15 @@
       if (!currentDoc) return;
 
       if (action === 'review') {
-        statusText.textContent = currentDoc.reviewed ? '🔄 Devolviendo a pendiente...' : '✅ ¡Misión cumplida!';
         await taskDb.toggleReviewed(currentDoc);
+        renderTasks();
       }
-
       if (action === 'delete') {
-        const approved = await openModal(`¿Eliminar "${currentDoc.title}"?`);
-        if (!approved) return;
-        statusText.textContent = '💥 Eliminando...';
-        await taskDb.deleteTask(currentDoc);
+        const approved = await customConfirm(`¿Eliminar "${currentDoc.title}"?`);
+        if (approved) { await taskDb.deleteTask(currentDoc); renderTasks(); }
+      }
+      if (action === 'detail') {
+        showTaskDetail(currentDoc);
       }
     });
 
@@ -771,49 +1281,53 @@
       const tasks = await taskDb.getTasks();
       let filtered = tasks;
 
-      // Filtrar por categoría
       if (selectedCategory !== 'all') {
         filtered = filtered.filter(task => task.category === selectedCategory);
       }
-
-      // Filtrar por estado
       if (currentFilter === 'pending') filtered = filtered.filter(t => !t.reviewed);
       else if (currentFilter === 'reviewed') filtered = filtered.filter(t => t.reviewed);
 
       const total = filtered.length;
-      statusText.textContent = total === 0 ? '📭 Sin misiones aquí.' : `📌 ${total} misión${total === 1 ? '' : 'es'} en ${selectedCategory === 'all' ? 'todas las categorías' : selectedCategory} (${currentFilter === 'all' ? 'todas' : currentFilter === 'pending' ? 'pendientes' : 'completadas'})`;
+      statusText.textContent = total === 0 ? '📭 Sin tareas aquí.' : `📌 ${total} tarea${total === 1 ? '' : 's'} en ${selectedCategory === 'all' ? 'todas las categorías' : selectedCategory} (${currentFilter})`;
 
       currentTasks = Object.fromEntries(filtered.map(task => [task._id, task]));
 
-      taskList.innerHTML = filtered.map(task => {
-        const reviewedClass = task.reviewed ? 'reviewed' : '';
-        const description = task.description ? `<p class="task-description">${escapeHtml(task.description)}</p>` : '';
-        const dueBadge = task.dueDate ? `<span class="task-due ${isOverdue(task.dueDate) ? 'overdue' : ''}">${formatDueDate(task.dueDate)}</span>` : '';
-        const categoryBadge = task.category ? `<span class="task-category">📂 ${escapeHtml(task.category)}</span>` : '';
-        const actionLabel = task.reviewed ? '↩️ Desmarcar' : '✅ Completar';
-        const actionButtonClass = task.reviewed ? 'secondary' : 'reviewed';
-
+      const tasksHtml = await Promise.all(filtered.map(async task => {
+        let imageThumb = '';
+        if (task.hasImage) {
+          try {
+            const url = await taskDb.getImageUrl(task._id);
+            if (url) imageThumb = `<img src="${url}" class="task-thumbnail" data-id="${task._id}" alt="Miniatura" />`;
+          } catch (e) {}
+        }
         return `
-          <article class="task-card ${reviewedClass}">
+          <article class="task-card ${task.reviewed ? 'reviewed' : ''}">
             <div class="task-header">
               <h2 class="task-title">${escapeHtml(task.title)}</h2>
             </div>
             <p class="task-meta">
-              ${task.reviewed ? '✔️ Completada · ' : ''}${categoryBadge} ${new Date(task.createdAt).toLocaleString('es-ES')} ${dueBadge}
+              ${task.reviewed ? '✔️ Completada · ' : ''}
+              <span class="task-category">📂 ${escapeHtml(task.category)}</span>
+              ${new Date(task.createdAt).toLocaleString('es-ES')}
+              ${task.dueDate ? `<span class="task-due ${isOverdue(task.dueDate) ? 'overdue' : ''}">${formatDueDate(task.dueDate)}</span>` : ''}
             </p>
-            ${description}
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              ${imageThumb}
+              <div style="flex:1;">${task.description ? `<p class="task-description">${escapeHtml(task.description.substring(0, 80))}${task.description.length > 80 ? '...' : ''}</p>` : ''}</div>
+            </div>
             <div class="task-actions">
-              <button type="button" class="${actionButtonClass}" data-action="review" data-id="${task._id}">${actionLabel}</button>
+              <button type="button" class="${task.reviewed ? 'secondary' : 'reviewed'}" data-action="review" data-id="${task._id}">${task.reviewed ? '↩️ Desmarcar' : '✅ Completar'}</button>
               <button type="button" class="secondary" data-action="delete" data-id="${task._id}">🗑️ Eliminar</button>
+              <button type="button" class="detail-btn" data-action="detail" data-id="${task._id}">🔍 Ver misión</button>
             </div>
           </article>`;
-      }).join('');
+      }));
 
+      taskList.innerHTML = tasksHtml.join('');
       if (filtered.length === 0) {
-        taskList.innerHTML = '<p class="notice">🌟 ¡No hay misiones en esta vista! Añade una o cambia los filtros.</p>';
+        taskList.innerHTML = '<p class="notice">🌟 ¡No hay tareas! A mimir .</p>';
       }
 
-      // Reprogramar notificaciones para las tareas visibles (por si acaso)
       filtered.forEach(task => scheduleTaskNotifications(task));
     }
 
@@ -831,8 +1345,7 @@
     function isOverdue(dueDate) {
       if (!dueDate) return false;
       const due = new Date(dueDate);
-      if (isNaN(due.getTime())) return false;
-      return due < new Date();
+      return !isNaN(due.getTime()) && due < new Date();
     }
 
     function escapeHtml(value) {
@@ -882,47 +1395,29 @@
         const threeHBefore = dueTime - 3 * 60 * 60 * 1000;
         if (threeHBefore > now) {
           timers.push(setTimeout(async () => {
-            sendNotification('⏳ Recordatorio – 3 horas antes', {
-              body: `"${task.title}" vence en 3 horas. Prepárate.`,
-            });
+            sendNotification('⏳ Recordatorio – 3 horas antes', { body: `"${task.title}" vence en 3 horas. Prepárate.` });
             const fresh = await taskDb.db.get(task._id).catch(() => null);
-            if (fresh && !fresh.notified3h) {
-              fresh.notified3h = true;
-              await taskDb.updateTask(fresh);
-            }
+            if (fresh && !fresh.notified3h) { fresh.notified3h = true; await taskDb.updateTask(fresh); }
           }, threeHBefore - now));
         }
       }
-
       if (!task.notified1h) {
         const oneHBefore = dueTime - 60 * 60 * 1000;
         if (oneHBefore > now) {
           timers.push(setTimeout(async () => {
-            sendNotification('⌛ Recordatorio – 1 hora antes', {
-              body: `"${task.title}" vence en 1 hora. ¡Que no se te pase!`,
-            });
+            sendNotification('⌛ Recordatorio – 1 hora antes', { body: `"${task.title}" vence en 1 hora. ¡Que no se te pase!` });
             const fresh = await taskDb.db.get(task._id).catch(() => null);
-            if (fresh && !fresh.notified1h) {
-              fresh.notified1h = true;
-              await taskDb.updateTask(fresh);
-            }
+            if (fresh && !fresh.notified1h) { fresh.notified1h = true; await taskDb.updateTask(fresh); }
           }, oneHBefore - now));
         }
       }
-
       if (!task.notifiedDue && dueTime > now) {
         timers.push(setTimeout(async () => {
-          sendNotification('⏰ ¡Tarea vencida!', {
-            body: `"${task.title}" ha llegado a su hora límite.`,
-          });
+          sendNotification('⏰ ¡Tarea vencida!', { body: `"${task.title}" ha llegado a su hora límite.` });
           const fresh = await taskDb.db.get(task._id).catch(() => null);
-          if (fresh && !fresh.notifiedDue) {
-            fresh.notifiedDue = true;
-            await taskDb.updateTask(fresh);
-          }
+          if (fresh && !fresh.notifiedDue) { fresh.notifiedDue = true; await taskDb.updateTask(fresh); }
         }, dueTime - now));
       }
-
       if (timers.length) activeTimers.set(task._id, timers);
     }
 
@@ -934,35 +1429,32 @@
         if (task.reviewed || !task.dueDate || !task.dueDate.includes('T')) continue;
         const dueTime = new Date(task.dueDate).getTime();
         if (isNaN(dueTime)) continue;
-
         if (!task.notified3h && now >= dueTime - 3 * 60 * 60 * 1000 && now < dueTime) {
-          sendNotification('⏳ Recordatorio – 3 horas antes', {
-            body: `"${task.title}" vence en 3 horas. Prepárate.`,
-          });
-          task.notified3h = true;
-          await taskDb.updateTask(task);
+          sendNotification('⏳ Recordatorio – 3 horas antes', { body: `"${task.title}" vence en 3 horas. Prepárate.` });
+          task.notified3h = true; await taskDb.updateTask(task);
         }
         if (!task.notified1h && now >= dueTime - 60 * 60 * 1000 && now < dueTime) {
-          sendNotification('⌛ Recordatorio – 1 hora antes', {
-            body: `"${task.title}" vence en 1 hora. ¡Que no se te pase!`,
-          });
-          task.notified1h = true;
-          await taskDb.updateTask(task);
+          sendNotification('⌛ Recordatorio – 1 hora antes', { body: `"${task.title}" vence en 1 hora. ¡Que no se te pase!` });
+          task.notified1h = true; await taskDb.updateTask(task);
         }
         if (!task.notifiedDue && now >= dueTime) {
-          sendNotification('⏰ ¡Tarea vencida!', {
-            body: `"${task.title}" ha vencido.`,
-          });
-          task.notifiedDue = true;
-          await taskDb.updateTask(task);
+          sendNotification('⏰ ¡Tarea vencida!', { body: `"${task.title}" ha vencido.` });
+          task.notifiedDue = true; await taskDb.updateTask(task);
         }
       }
     }
 
-    const motivationalPhrases = [ /* igual */ ];
+    const motivationalPhrases = [
+      'Toca revisar tu agenda y avanzar con una tarea.',
+      'Una pequeña acción hoy evita grandes prisas mañana.',
+      'Tus tareas esperarán menos si les das atención ahora.',
+      'Revisar tu lista es el primer paso para cumplirla.',
+      'Un recordatorio amable para que mantengas el ritmo.'
+    ];
     function getRandomMotivation() {
       return motivationalPhrases[Math.floor(Math.random() * motivationalPhrases.length)];
     }
+
     let motivationInterval;
     function startMotivation() {
       if (motivationInterval) clearInterval(motivationInterval);
@@ -972,6 +1464,7 @@
         }
       }, 5 * 60 * 1000);
     }
+
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
         fireMissedNotifications();
@@ -982,72 +1475,68 @@
       }
     });
 
-    // ==================== SERVICE WORKER & ACTUALIZACIÓN ====================
+    // ==================== ACTUALIZACIÓN ====================
     let swRegistration = null;
-
     async function registerServiceWorker() {
       if ('serviceWorker' in navigator) {
         try {
           swRegistration = await navigator.serviceWorker.register('./service-worker.js');
           console.log('Service Worker registrado');
-          // Escuchar actualizaciones futuras
           swRegistration.addEventListener('updatefound', () => {
             const newWorker = swRegistration.installing;
             newWorker.addEventListener('statechange', () => {
               if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                // Hay una nueva versión esperando
-                document.getElementById('update-btn').style.display = 'inline-block';
+                // Podríamos mostrar un aviso, pero el botón lo maneja
               }
             });
           });
-          // Si ya hay uno en espera al cargar
-          if (swRegistration.waiting && navigator.serviceWorker.controller) {
-            document.getElementById('update-btn').style.display = 'inline-block';
-          }
         } catch (error) {
           console.warn('Error registrando Service Worker:', error);
         }
       }
     }
 
-    document.getElementById('update-btn').addEventListener('click', async () => {
-      if (!swRegistration) return;
+    updateBtn.addEventListener('click', async () => {
+      if (!swRegistration) {
+        await customAlert('El sistema de actualización no está disponible.');
+        return;
+      }
       try {
-        // Forzar comprobación de actualización
         await swRegistration.update();
         if (swRegistration.waiting) {
-          // Hay un nuevo service worker esperando
-          const confirmUpdate = confirm('🔥 ¡Nueva versión disponible! ¿Actualizar ahora? (No perderás tus misiones)');
+          const confirmUpdate = await customConfirm('🔥 ¡Nueva versión disponible! ¿Actualizar ahora? (No perderás tus misiones)');
           if (confirmUpdate) {
             swRegistration.waiting.postMessage({ type: 'SKIP_WAITING' });
             navigator.serviceWorker.addEventListener('controllerchange', () => {
               window.location.reload();
             });
+            await customAlert('✨ ¡Actualización completada!');
           }
         } else if (swRegistration.installing) {
-          // Se está instalando, esperamos a que termine
-          swRegistration.installing.addEventListener('statechange', (e) => {
+          swRegistration.installing.addEventListener('statechange', async (e) => {
             if (e.target.state === 'installed') {
-              if (confirm('🔥 ¡Nueva versión instalada! ¿Actualizar ahora?')) {
+              const confirmInstall = await customConfirm('🔥 ¡Nueva versión instalada! ¿Actualizar ahora?');
+              if (confirmInstall) {
                 swRegistration.waiting.postMessage({ type: 'SKIP_WAITING' });
                 navigator.serviceWorker.addEventListener('controllerchange', () => {
                   window.location.reload();
                 });
+                await customAlert('✨ ¡Actualización aplicada!');
               }
             }
           });
         } else {
-          alert('✅ Ya tienes la versión más reciente.');
+          await customAlert('✅ Ya tienes la versión más reciente.');
         }
       } catch (err) {
         console.error('Error al buscar actualización:', err);
-        alert('Ocurrió un error al buscar la actualización.');
+        await customAlert('Ocurrió un error al buscar la actualización. Intenta de nuevo más tarde.');
       }
     });
 
     // ==================== INICIO ====================
     window.addEventListener('load', async () => {
-      await loadCategories();              // Cargar categorías antes de renderizar
+      await loadCategories();
       notificationsAllowed = await requestNotificationPermission();
       if (notificationsAllowed) statusText.textContent = '🔔 Notificaciones activadas.';
       await renderTasks();
